@@ -4,3 +4,4 @@ frames/
 snaps/
 audio.mp3
 *.log
+.output.hf-transaction-*/
