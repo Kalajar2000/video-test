@@ -1,0 +1,1030 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      @font-face { font-family: "Inter"; src: url("fonts/Inter-400-latin.woff2") format("woff2"); font-weight: 400; font-display: block; }
+      @font-face { font-family: "Inter"; src: url("fonts/Inter-700-latin.woff2") format("woff2"); font-weight: 700; font-display: block; }
+      @font-face { font-family: "JetBrains Mono"; src: url("fonts/JetBrainsMono-400.woff2") format("woff2"); font-weight: 400; font-display: block; }
+      @font-face { font-family: "JetBrains Mono"; src: url("fonts/JetBrainsMono-700.woff2") format("woff2"); font-weight: 700; font-display: block; }
+      :root {
+        --bg: #141312; --panel: #211f1d; --panel-2: #2c2926; --line: #3a3632;
+        --text: #f3eee6; --muted: #a39e96;
+        --accent-0: #e07f5d; --accent-1: #e9b872; --accent-2: #8cc49a; --accent-3: #8fb8f2; --accent-4: #c9a3e6;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: var(--bg);
+        font-family: "Inter", "JetBrains Mono", ui-sans-serif, system-ui, sans-serif; color: var(--text); }
+      #stage { position: relative; width: 100%; height: 100%; overflow: hidden; background: var(--bg); }
+      .backdrop { position: absolute; left: 0; top: 702px; width: 1080px; height: 1218px;
+        background-image: linear-gradient(rgba(243,238,230,0.035) 2px, transparent 2px), linear-gradient(90deg, rgba(243,238,230,0.035) 2px, transparent 2px);
+        background-size: 54px 54px; background-position: 0 0; }
+      .video-wrapper { position: absolute; left: 0; top: 0; width: 1080px; height: 702px; overflow: hidden; background: #000; }
+      .video-wrapper video { width: 100%; height: 100%; object-fit: cover; display: block; }
+      .seam { position: absolute; left: 0; top: 702px; width: 1080px; height: 6px; background: var(--accent-0); }
+      .rail { position: absolute; left: 48px; top: 736px; width: 984px; height: 110px; }
+      .rail .head { position: relative; height: 56px; }
+      .rail .cnw { position: absolute; left: 0; top: 6px; width: 140px; height: 44px; overflow: hidden; font: 700 24px/44px "JetBrains Mono"; letter-spacing: .14em; color: var(--muted); }
+      .rail .cnw .lbl { position: absolute; left: 0; top: 0; }
+      .rail .cn { position: absolute; left: 92px; top: 0; color: var(--accent-0); }
+      .rail .ctw { position: absolute; left: 150px; right: 0; top: 0; height: 56px; overflow: hidden; }
+      .rail .ct { position: absolute; left: 0; top: 0; font: 700 40px/56px "Inter"; letter-spacing: -0.01em; white-space: nowrap; }
+      .rail .segs { display: flex; gap: 10px; margin-top: 18px; }
+      .rail .seg { flex: 1; height: 8px; border-radius: 4px; background: var(--panel-2); overflow: hidden; }
+      .rail .segfill { width: 100%; height: 100%; background: var(--accent-0); transform-origin: left center; }
+      .card-host { position: absolute; pointer-events: none; overflow: hidden; }
+      .card-host .card { position: relative; width: 100%; height: 100%; overflow: hidden; }
+      .card-host .root { position: absolute; left: 0; top: 0; width: 100%; height: 100%; padding: 0 48px 48px; display: flex; flex-direction: column; justify-content: center; gap: 30px; color: var(--text); font-family: "Inter"; }
+      .card-host .char { display: inline-block; }
+      .card-host .w { display: inline-block; white-space: nowrap; }
+      .card-host .grow { flex: 1; min-width: 0; }
+      .card-host .mono { font-family: "JetBrains Mono"; }
+      .card-host .acc { color: var(--acc); }
+      .card-host .ico { display: inline-flex; flex: none; }
+      .card-host .ico svg { width: 100%; height: 100%; }
+      .card-host .kicker { font: 700 22px/1 "JetBrains Mono"; letter-spacing: .16em; text-transform: uppercase; color: var(--acc); padding-left: 42px; position: relative; }
+      .card-host .kicker::before { content: ""; position: absolute; left: 0; top: 9px; width: 28px; height: 4px; border-radius: 2px; background: var(--acc); }
+      .card-host .title { font: 700 84px/1.04 "Inter"; letter-spacing: -0.03em; margin: 0; }
+      .card-host .title.sm { font-size: 64px; line-height: 1.08; }
+      .card-host .lead { font: 400 34px/1.3 "Inter"; color: var(--muted); margin: 0; }
+      .card-host .chip { display: inline-flex; align-items: center; gap: 14px; padding: 16px 26px; border-radius: 999px; background: var(--panel); border: 2px solid var(--line); font: 700 32px/1 "Inter"; color: var(--text); white-space: nowrap; }
+      .card-host .chip.big { font-size: 40px; padding: 22px 34px; }
+      .card-host .chip.solid { background: var(--acc); border-color: var(--acc); color: #141312; }
+      .card-host .chip .ico { color: var(--acc); }
+      .card-host .chip.solid .ico { color: #141312; }
+      .card-host .badge { display: inline-flex; align-items: center; gap: 14px; padding: 16px 26px; border-radius: 999px; background: var(--acc); color: #141312; font: 700 32px/1 "Inter"; align-self: flex-start; }
+      .card-host .node { display: flex; align-items: center; gap: 16px; padding: 18px 28px; border-radius: 20px; background: var(--panel); border: 2px solid var(--acc); color: var(--acc); font: 700 32px/1 "Inter"; }
+      .card-host .row { display: flex; align-items: center; gap: 24px; padding: 22px 28px; border-radius: 20px; background: var(--panel); border: 2px solid var(--line); }
+      .card-host .row .num { font: 700 28px/1 "JetBrains Mono"; color: var(--acc); }
+      .card-host .row .txt { font: 700 36px/1.2 "Inter"; }
+      .card-host .row .sub { font: 400 27px/1.3 "Inter"; color: var(--muted); margin-top: 6px; }
+      .card-host .input { padding: 30px 34px; border-radius: 24px; background: #0e0d0c; border: 2px solid var(--line); font: 400 40px/1.35 "JetBrains Mono"; color: var(--text); }
+    </style>
+  </head>
+  <body>
+    <div id="stage" data-composition-id="talking-head-recut" data-start="0" data-duration="486.4" data-fps="30" data-width="1080" data-height="1920">
+      <div class="backdrop"></div>
+      <div class="video-wrapper" id="video-wrap">
+        <video id="bg-video" src="input-video.mp4" muted playsinline data-start="0" data-duration="486.4" data-track-index="1"></video>
+      </div>
+      <audio id="source-audio" src="input-video.mp4" data-start="0" data-duration="486.4" data-track-index="10" data-volume="1"></audio>
+      <div class="seam"></div>
+      <div class="rail">
+        <div class="head"><div class="cnw"><span class="lbl">PASO</span><span class="cn" id="cn-0">01</span><span class="cn" id="cn-1">02</span><span class="cn" id="cn-2">03</span><span class="cn" id="cn-3">04</span><span class="cn" id="cn-4">05</span><span class="cn" id="cn-5">06</span></div><div class="ctw"><span class="ct" id="ct-0">Qué es una skill</span><span class="ct" id="ct-1">El material</span><span class="ct" id="ct-2">Crear la skill</span><span class="ct" id="ct-3">Guardar y compartir</span><span class="ct" id="ct-4">Usar la skill</span><span class="ct" id="ct-5">El resultado</span></div></div>
+        <div class="segs"><div class="seg"><div class="segfill" id="sf-0"></div></div><div class="seg"><div class="segfill" id="sf-1"></div></div><div class="seg"><div class="segfill" id="sf-2"></div></div><div class="seg"><div class="segfill" id="sf-3"></div></div><div class="seg"><div class="segfill" id="sf-4"></div></div><div class="seg"><div class="segfill" id="sf-5"></div></div></div>
+      </div>
+<div class="card-host clip" id="host-card-01" data-card-id="card-01" data-start="0.4" data-duration="11.0" data-track-index="2" style="left:0;top:872px;width:1080px;height:1048px;">
+<div class="card" data-card-id="card-01">
+<style>
+.card[data-card-id="card-01"] .eq { display:flex; align-items:center; gap:24px; margin-top:8px; }
+.card[data-card-id="card-01"] .eq-sign { font:700 64px/1 'Inter'; color:var(--muted); }
+.card[data-card-id="card-01"] .eq-txt { font:700 56px/1 'Inter'; }
+.card[data-card-id="card-01"] .stack { position:relative; height:470px; margin-top:24px; }
+.card[data-card-id="card-01"] .pcard { position:absolute; left:120px; width:620px; height:330px; border-radius:28px; background:var(--panel); border:2px solid var(--line); padding:40px 44px; display:flex; flex-direction:column; gap:22px; }
+.card[data-card-id="card-01"] .p3 { top:0; left:200px; opacity:.45; }
+.card[data-card-id="card-01"] .p2 { top:40px; left:160px; opacity:.7; }
+.card[data-card-id="card-01"] .p1 { top:80px; border-color:var(--acc); }
+.card[data-card-id="card-01"] .ptag { font-size:26px; color:var(--acc); letter-spacing:.1em; text-transform:uppercase; }
+.card[data-card-id="card-01"] .bar { height:22px; border-radius:11px; background:var(--panel-2); }
+.card[data-card-id="card-01"] .badge { position:absolute; right:40px; top:300px; }
+
+.card[data-card-id="card-01"] { --acc: var(--accent-0); }
+</style>
+<div class="root">
+<div class="kicker" id="card-01-kicker" data-anim="fade-in" data-anim-at="0.2" data-anim-duration="0.4">Claude · skills</div>
+<h1 class="title" id="card-01-title" data-anim="kinetic-chars" data-anim-at="0.4" data-anim-duration="0.7" data-anim-stagger="0.025" data-anim-pattern="pop"><span class="w"><span class="char">¿</span><span class="char">Q</span><span class="char">u</span><span class="char">é</span></span> <span class="w"><span class="char">e</span><span class="char">s</span></span> <span class="w"><span class="char">u</span><span class="char">n</span><span class="char">a</span></span> <span class="w"><span class="char">s</span><span class="char">k</span><span class="char">i</span><span class="char">l</span><span class="char">l</span><span class="char">?</span></span></h1>
+<div class="eq" id="card-01-eq" data-anim="blur-in" data-anim-at="5.8" data-anim-duration="0.6">
+  <span class="chip big">skill</span><span class="eq-sign">=</span><span class="eq-txt">prompt <span class="acc">repetible</span></span>
+</div>
+<div class="stack">
+  <div class="pcard p3" id="card-01-p3" data-anim="slide-in" data-anim-at="7.9" data-anim-duration="0.5" data-anim-from="bottom" data-anim-distance="60"></div>
+  <div class="pcard p2" id="card-01-p2" data-anim="slide-in" data-anim-at="7.5" data-anim-duration="0.5" data-anim-from="bottom" data-anim-distance="60"></div>
+  <div class="pcard p1" id="card-01-p1" data-anim="scale-pop" data-anim-at="6.7" data-anim-duration="0.5">
+    <div class="ptag mono">prompt</div>
+    <div class="bar" style="width:86%"></div><div class="bar" style="width:72%"></div><div class="bar" style="width:80%"></div><div class="bar" style="width:54%"></div>
+  </div>
+  <div class="badge" id="card-01-badge" data-anim="scale-pop" data-anim-at="7.6" data-anim-duration="0.5"><span class="ico" style="width:44px;height:44px;"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 30a18 18 0 0 1 32-11l4 5"/><path d="M50 12v12H38"/><path d="M50 34a18 18 0 0 1-32 11l-4-5"/><path d="M14 52V40h12"/></svg></span><span>repetible</span></div>
+</div>
+</div>
+</div>
+</div>
+<div class="card-host clip" id="host-card-02" data-card-id="card-02" data-start="11.4" data-duration="11.0" data-track-index="3" style="left:0;top:872px;width:1080px;height:1048px;">
+<div class="card" data-card-id="card-02">
+<style>
+.card[data-card-id="card-02"] .diagram { position:relative; height:330px; }
+.card[data-card-id="card-02"] .src { position:absolute; left:372px; top:0; width:240px; height:88px; justify-content:center; }
+.card[data-card-id="card-02"] .links { position:absolute; left:0; top:20px; width:984px; height:300px; stroke:var(--acc); }
+.card[data-card-id="card-02"] .t1 { position:absolute; left:130px; top:244px; }
+.card[data-card-id="card-02"] .t2 { position:absolute; left:604px; top:244px; }
+.card[data-card-id="card-02"] .outs { display:flex; flex-direction:column; gap:18px; }
+.card[data-card-id="card-02"] .out { display:flex; align-items:center; justify-content:space-between; padding:22px 28px; border-radius:18px; background:var(--panel); border:2px solid var(--line); }
+.card[data-card-id="card-02"] .ob { height:22px; border-radius:11px; background:var(--panel-2); }
+
+.card[data-card-id="card-02"] { --acc: var(--accent-1); }
+</style>
+<div class="root">
+<div class="kicker" id="card-02-kicker" data-anim="fade-in" data-anim-at="0.2" data-anim-duration="0.4">Funciona en</div>
+<div class="diagram">
+  <div class="node src" id="card-02-src" data-anim="scale-pop" data-anim-at="0.4" data-anim-duration="0.5"><span class="ico" style="width:64px;height:64px;"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linejoin="round"><path d="M14 6h26l12 12v40H14z"/><path d="M40 6v12h12"/><path d="M22 32h22M22 41h22M22 50h14"/></svg></span><span class="mono">SKILL</span></div>
+  <svg class="links" viewBox="0 0 984 300" fill="none" stroke-width="5" stroke-linecap="round">
+    <path pathLength="1" d="M492 70 C492 160 250 150 250 230" id="card-02-l1" data-anim="draw-path" data-anim-at="0.6" data-anim-duration="0.6"/>
+    <path pathLength="1" d="M492 70 C492 160 734 150 734 230" id="card-02-l2" data-anim="draw-path" data-anim-at="3.8" data-anim-duration="0.6"/>
+  </svg>
+  <div class="chip big t1" id="card-02-t1" data-anim="scale-pop" data-anim-at="1.1" data-anim-duration="0.5">Claude</div>
+  <div class="chip big t2" id="card-02-t2" data-anim="scale-pop" data-anim-at="4.2" data-anim-duration="0.5">ChatGPT</div>
+</div>
+<h1 class="title sm" id="card-02-title" data-anim="kinetic-chars" data-anim-at="4.9" data-anim-duration="0.7" data-anim-stagger="0.025" data-anim-pattern="pop"><span class="w"><span class="char">S</span><span class="char">i</span><span class="char">e</span><span class="char">m</span><span class="char">p</span><span class="char">r</span><span class="char">e</span></span> <span class="w"><span class="char">d</span><span class="char">e</span></span> <span class="w"><span class="char">l</span><span class="char">a</span></span> <span class="w"><span class="char">m</span><span class="char">i</span><span class="char">s</span><span class="char">m</span><span class="char">a</span></span> <span class="w"><span class="char">m</span><span class="char">a</span><span class="char">n</span><span class="char">e</span><span class="char">r</span><span class="char">a</span></span></h1>
+<div class="outs">
+  <div class="out" id="card-02-o1" data-anim="slide-in" data-anim-at="5.8" data-anim-duration="0.45" data-anim-from="left" data-anim-distance="60"><div class="ob" style="width:70%"></div><span class="ico" style="width:40px;height:40px;color:var(--accent-2)"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 33l12 12 24-26"/></svg></span></div>
+  <div class="out" id="card-02-o2" data-anim="slide-in" data-anim-at="6.2" data-anim-duration="0.45" data-anim-from="left" data-anim-distance="60"><div class="ob" style="width:70%"></div><span class="ico" style="width:40px;height:40px;color:var(--accent-2)"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 33l12 12 24-26"/></svg></span></div>
+  <div class="out" id="card-02-o3" data-anim="slide-in" data-anim-at="6.6" data-anim-duration="0.45" data-anim-from="left" data-anim-distance="60"><div class="ob" style="width:70%"></div><span class="ico" style="width:40px;height:40px;color:var(--accent-2)"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 33l12 12 24-26"/></svg></span></div>
+</div>
+</div>
+</div>
+</div>
+<div class="card-host clip" id="host-card-03" data-card-id="card-03" data-start="22.4" data-duration="19.7" data-track-index="2" style="left:0;top:872px;width:1080px;height:1048px;">
+<div class="card" data-card-id="card-03">
+<style>
+.card[data-card-id="card-03"] .folder { display:flex; align-items:center; gap:32px; color:var(--acc); }
+.card[data-card-id="card-03"] .fname { font-size:30px; color:var(--muted); }
+.card[data-card-id="card-03"] .chips { display:flex; flex-wrap:wrap; gap:18px; }
+
+.card[data-card-id="card-03"] { --acc: var(--accent-2); }
+</style>
+<div class="root">
+<div class="kicker" id="card-03-kicker" data-anim="fade-in" data-anim-at="0.2" data-anim-duration="0.4">El material</div>
+<div class="folder" id="card-03-folder" data-anim="scale-pop" data-anim-at="1.2" data-anim-duration="0.6"><span class="ico" style="width:150px;height:150px;"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linejoin="round"><path d="M6 16a4 4 0 0 1 4-4h14l6 7h24a4 4 0 0 1 4 4v27a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4z"/><path d="M6 26h52"/></svg></span><span class="mono fname">folder / documentos</span></div>
+<h1 class="title sm" id="card-03-title" data-anim="kinetic-chars" data-anim-at="4.8" data-anim-duration="0.8" data-anim-stagger="0.025" data-anim-pattern="pop"><span class="w"><span class="char">U</span><span class="char">n</span></span> <span class="w"><span class="char">f</span><span class="char">o</span><span class="char">l</span><span class="char">d</span><span class="char">e</span><span class="char">r</span></span> <span class="w"><span class="char">p</span><span class="char">a</span><span class="char">r</span><span class="char">a</span></span> <span class="w"><span class="char">h</span><span class="char">a</span><span class="char">c</span><span class="char">e</span><span class="char">r</span></span> <span class="w"><span class="char">u</span><span class="char">n</span></span> <span class="w"><span class="char">b</span><span class="char">r</span><span class="char">i</span><span class="char">e</span><span class="char">f</span></span> <span class="w"><span class="char">p</span><span class="char">u</span><span class="char">b</span><span class="char">l</span><span class="char">i</span><span class="char">c</span><span class="char">i</span><span class="char">t</span><span class="char">a</span><span class="char">r</span><span class="char">i</span><span class="char">o</span></span></h1>
+<p class="lead" id="card-03-who" data-anim="fade-in" data-anim-at="12.3" data-anim-duration="0.4">Lo que se entrega a:</p>
+<div class="chips">
+  <span class="chip" id="card-03-c1" data-anim="scale-pop" data-anim-at="13.6" data-anim-duration="0.45"><span class="ico" style="width:34px;height:34px;"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4"><circle cx="32" cy="24" r="10"/><path d="M12 56c2-11 10-16 20-16s18 5 20 16"/></svg></span>Editores de video</span>
+  <span class="chip" id="card-03-c2" data-anim="scale-pop" data-anim-at="15.1" data-anim-duration="0.45"><span class="ico" style="width:30px;height:30px;"><svg viewBox="0 0 64 64" fill="currentColor"><path d="M32 4l6 20 20 8-20 8-6 20-6-20-20-8 20-8z"/></svg></span>Estrategas creativos</span>
+  <span class="chip" id="card-03-c3" data-anim="scale-pop" data-anim-at="17.7" data-anim-duration="0.45"><span class="ico" style="width:34px;height:34px;"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"><path d="M10 26v12h10l22 12V14L20 26z"/><path d="M50 24c4 4 4 12 0 16"/></svg></span>Estrategia de marketing</span>
+</div>
+</div>
+</div>
+</div>
+<div class="card-host clip" id="host-card-04" data-card-id="card-04" data-start="42.1" data-duration="17.2" data-track-index="3" style="left:0;top:872px;width:1080px;height:1048px;">
+<div class="card" data-card-id="card-04">
+<style>
+.card[data-card-id="card-04"] .rows { display:flex; flex-direction:column; gap:16px; }
+.card[data-card-id="card-04"] .note { display:flex; align-items:center; gap:18px; font:700 34px/1.25 'Inter'; margin-top:6px; }
+
+.card[data-card-id="card-04"] { --acc: var(--accent-2); }
+</style>
+<div class="root">
+<div class="kicker" id="card-04-kicker" data-anim="fade-in" data-anim-at="0.1" data-anim-duration="0.4">Dentro del folder</div>
+<div class="rows">
+<div class="row" id="card-04-r1" data-anim="slide-in" data-anim-at="0.1" data-anim-duration="0.45" data-anim-from="left" data-anim-distance="70"><span class="num">01</span><span class="ico" style="width:44px;height:44px;color:var(--muted)"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linejoin="round"><path d="M14 6h26l12 12v40H14z"/><path d="M40 6v12h12"/><path d="M22 32h22M22 41h22M22 50h14"/></svg></span><div class="grow"><div class="txt">Qué es un brief</div></div></div>
+<div class="row" id="card-04-r2" data-anim="slide-in" data-anim-at="2.3" data-anim-duration="0.45" data-anim-from="left" data-anim-distance="70"><span class="num">02</span><span class="ico" style="width:44px;height:44px;color:var(--muted)"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linejoin="round"><path d="M14 6h26l12 12v40H14z"/><path d="M40 6v12h12"/><path d="M22 32h22M22 41h22M22 50h14"/></svg></span><div class="grow"><div class="txt">Preguntas antes de crear un brief</div><div class="sub" id="card-04-r2-sub" data-anim="fade-in" data-anim-at="4.7" data-anim-duration="0.4">Las que hace la estrategia creativa</div></div></div>
+<div class="row" id="card-04-r3" data-anim="slide-in" data-anim-at="8.9" data-anim-duration="0.45" data-anim-from="left" data-anim-distance="70"><span class="num">03</span><span class="ico" style="width:44px;height:44px;color:var(--muted)"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linejoin="round"><path d="M14 6h26l12 12v40H14z"/><path d="M40 6v12h12"/><path d="M22 32h22M22 41h22M22 50h14"/></svg></span><div class="grow"><div class="txt">Estructura del brief</div></div></div>
+<div class="row" id="card-04-r4" data-anim="slide-in" data-anim-at="10.3" data-anim-duration="0.45" data-anim-from="left" data-anim-distance="70"><span class="num">04</span><span class="ico" style="width:44px;height:44px;color:var(--muted)"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linejoin="round"><path d="M14 6h26l12 12v40H14z"/><path d="M40 6v12h12"/><path d="M22 32h22M22 41h22M22 50h14"/></svg></span><div class="grow"><div class="txt">Brief para video</div></div></div>
+<div class="row" id="card-04-r5" data-anim="slide-in" data-anim-at="11.4" data-anim-duration="0.45" data-anim-from="left" data-anim-distance="70"><span class="num">05</span><span class="ico" style="width:44px;height:44px;color:var(--muted)"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linejoin="round"><path d="M14 6h26l12 12v40H14z"/><path d="M40 6v12h12"/><path d="M22 32h22M22 41h22M22 50h14"/></svg></span><div class="grow"><div class="txt">Reglas de redacción</div></div></div>
+</div>
+<div class="note" id="card-04-note" data-anim="blur-in" data-anim-at="12.5" data-anim-duration="0.6"><span class="ico" style="width:40px;height:40px;color:var(--acc)"><svg viewBox="0 0 64 64" fill="currentColor"><path d="M32 4l6 20 20 8-20 8-6 20-6-20-20-8 20-8z"/></svg></span><span>Las mejores prácticas de la industria publicitaria</span></div>
+</div>
+</div>
+</div>
+<div class="card-host clip" id="host-card-05" data-card-id="card-05" data-start="59.3" data-duration="29.2" data-track-index="2" style="left:0;top:872px;width:1080px;height:1048px;">
+<div class="card" data-card-id="card-05">
+<style>
+.card[data-card-id="card-05"] .rows { display:flex; flex-direction:column; gap:18px; margin-top:8px; }
+.card[data-card-id="card-05"] .ticks { display:flex; gap:10px; }
+.card[data-card-id="card-05"] .tick { width:46px; height:46px; border-radius:12px; background:var(--accent-2); color:#141312; display:flex; align-items:center; justify-content:center; }
+.card[data-card-id="card-05"] .tick svg { width:34px; height:34px; }
+
+.card[data-card-id="card-05"] { --acc: var(--accent-3); }
+</style>
+<div class="root">
+<div class="kicker" id="card-05-kicker" data-anim="fade-in" data-anim-at="0.1" data-anim-duration="0.4">Dentro del folder</div>
+<div class="badge" id="card-05-badge" data-anim="scale-pop" data-anim-at="1.1" data-anim-duration="0.5"><span class="ico" style="width:40px;height:40px;"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"><circle cx="28" cy="28" r="16"/><path d="M40 40l14 14"/></svg></span><span>Investigado con Claude</span></div>
+<div class="rows">
+<div class="row" id="card-05-r6" data-anim="slide-in" data-anim-at="4.7" data-anim-duration="0.45" data-anim-from="left" data-anim-distance="70"><span class="num">06</span><span class="ico" style="width:44px;height:44px;color:var(--muted)"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linejoin="round"><path d="M14 6h26l12 12v40H14z"/><path d="M40 6v12h12"/><path d="M22 32h22M22 41h22M22 50h14"/></svg></span><div class="grow"><div class="txt">Checklist de un buen brief</div></div><div class="ticks"><span class="tick" id="card-05-t0" data-anim="scale-pop" data-anim-at="7.2" data-anim-duration="0.35"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 33l12 12 24-26"/></svg></span><span class="tick" id="card-05-t1" data-anim="scale-pop" data-anim-at="8.8" data-anim-duration="0.35"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 33l12 12 24-26"/></svg></span><span class="tick" id="card-05-t2" data-anim="scale-pop" data-anim-at="11.4" data-anim-duration="0.35"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 33l12 12 24-26"/></svg></span></div></div>
+<div class="row" id="card-05-r7" data-anim="slide-in" data-anim-at="15.0" data-anim-duration="0.45" data-anim-from="left" data-anim-distance="70"><span class="num">07</span><span class="ico" style="width:44px;height:44px;color:var(--muted)"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linejoin="round"><path d="M14 6h26l12 12v40H14z"/><path d="M40 6v12h12"/><path d="M22 32h22M22 41h22M22 50h14"/></svg></span><div class="grow"><div class="txt">Ejemplos de video y estáticos</div><div class="sub" id="card-05-r7-sub" data-anim="fade-in" data-anim-at="18.4" data-anim-duration="0.4">Sacados de internet</div></div></div>
+<div class="row" id="card-05-r8" data-anim="slide-in" data-anim-at="23.1" data-anim-duration="0.45" data-anim-from="left" data-anim-distance="70"><span class="num">08</span><span class="ico" style="width:44px;height:44px;color:var(--muted)"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linejoin="round"><path d="M14 6h26l12 12v40H14z"/><path d="M40 6v12h12"/><path d="M22 32h22M22 41h22M22 50h14"/></svg></span><div class="grow"><div class="txt">Reels y posts orgánicos explicados</div><div class="sub" id="card-05-r8-sub" data-anim="fade-in" data-anim-at="27.6" data-anim-duration="0.4">También hecho con Claude</div></div></div>
+</div>
+</div>
+</div>
+</div>
+<div class="card-host clip" id="host-card-06" data-card-id="card-06" data-start="88.5" data-duration="19.6" data-track-index="3" style="left:0;top:872px;width:1080px;height:1048px;">
+<div class="card" data-card-id="card-06">
+<style>
+.card[data-card-id="card-06"] .why { align-self:flex-start; }
+.card[data-card-id="card-06"] .reg { display:flex; align-items:center; gap:36px; padding:36px; border-radius:28px; background:var(--panel); border:2px solid var(--acc); }
+.card[data-card-id="card-06"] .shield { color:var(--acc); }
+.card[data-card-id="card-06"] .rk { font-size:24px; color:var(--acc); letter-spacing:.14em; text-transform:uppercase; }
+.card[data-card-id="card-06"] .rt { font:700 44px/1.15 'Inter'; margin-top:8px; }
+.card[data-card-id="card-06"] .ru { font:400 32px/1.3 'Inter'; color:var(--muted); margin-top:8px; }
+.card[data-card-id="card-06"] .follow { display:flex; align-items:center; gap:20px; font:700 40px/1.2 'Inter'; }
+.card[data-card-id="card-06"] .okc { width:72px; height:72px; border-radius:50%; background:var(--accent-2); color:#141312; display:flex; align-items:center; justify-content:center; }
+
+.card[data-card-id="card-06"] { --acc: var(--accent-4); }
+</style>
+<div class="root">
+<div class="kicker" id="card-06-kicker" data-anim="fade-in" data-anim-at="0.1" data-anim-duration="0.4">+ Contexto</div>
+<h1 class="title" id="card-06-title" data-anim="kinetic-chars" data-anim-at="0.9" data-anim-duration="0.7" data-anim-stagger="0.025" data-anim-pattern="pop"><span class="w"><span class="char">A</span><span class="char">d</span><span class="char">a</span><span class="char">p</span><span class="char">t</span><span class="char">a</span><span class="char">d</span><span class="char">a</span></span> <span class="w"><span class="char">a</span></span> <span class="w"><span class="char">l</span><span class="char">a</span></span> <span class="w"><span class="char">u</span><span class="char">n</span><span class="char">i</span><span class="char">v</span><span class="char">e</span><span class="char">r</span><span class="char">s</span><span class="char">i</span><span class="char">d</span><span class="char">a</span><span class="char">d</span></span></h1>
+<span class="chip why" id="card-06-why" data-anim="scale-pop" data-anim-at="6.4" data-anim-duration="0.45">¿Por qué?</span>
+<div class="reg" id="card-06-reg" data-anim="slide-in" data-anim-at="10.4" data-anim-duration="0.55" data-anim-from="right" data-anim-distance="80">
+  <div class="shield"><span class="ico" style="width:120px;height:120px;"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"><path d="M32 6l22 8v16c0 14-9 24-22 28C19 54 10 44 10 30V14z"/></svg></span></div>
+  <div>
+    <div class="rk mono">Reglamento</div>
+    <div class="rt">Uso de inteligencia artificial</div>
+    <div class="ru" id="card-06-uni" data-anim="fade-in" data-anim-at="17.9" data-anim-duration="0.4">Universidad de Boyacá</div>
+  </div>
+</div>
+<div class="follow"><span class="okc"><svg class="ico" style="width:56px;height:56px" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><path pathLength="1" d="M14 33l12 12 24-26" id="card-06-chk" data-anim="draw-path" data-anim-at="13.1" data-anim-duration="0.5"/></svg></span><span id="card-06-follow" data-anim="fade-in" data-anim-at="12.9" data-anim-duration="0.4">Cada brief sigue la normativa</span></div>
+</div>
+</div>
+</div>
+<div class="card-host clip" id="host-card-07" data-card-id="card-07" data-start="108.1" data-duration="10.9" data-track-index="2" style="left:0;top:872px;width:1080px;height:1048px;">
+<div class="card" data-card-id="card-07">
+<style>
+.card[data-card-id="card-07"] .chatwin { display:flex; flex-direction:column; gap:22px; padding:30px; border-radius:30px; background:var(--panel); border:2px solid var(--line); margin-top:10px; }
+.card[data-card-id="card-07"] .att { display:flex; align-items:center; gap:24px; padding:24px; border-radius:20px; background:var(--panel-2); color:var(--acc); }
+.card[data-card-id="card-07"] .an { font:700 30px/1.2 'Inter'; color:var(--text); margin-bottom:14px; }
+.card[data-card-id="card-07"] .track { height:12px; border-radius:6px; background:#3a3632; overflow:hidden; }
+.card[data-card-id="card-07"] .fill { width:100%; height:100%; background:var(--acc); transform-origin:left center; }
+.card[data-card-id="card-07"] .okc { width:56px; height:56px; border-radius:50%; background:var(--accent-2); color:#141312; display:flex; align-items:center; justify-content:center; }
+.card[data-card-id="card-07"] .okc svg { width:36px; height:36px; }
+.card[data-card-id="card-07"] .input { font-size:52px; min-height:150px; display:flex; align-items:center; color:var(--acc); }
+
+.card[data-card-id="card-07"] { --acc: var(--accent-0); }
+</style>
+<div class="root">
+<div class="kicker" id="card-07-kicker" data-anim="fade-in" data-anim-at="0.2" data-anim-duration="0.4">Crear la skill</div>
+<h1 class="title" id="card-07-title" data-anim="kinetic-chars" data-anim-at="0.3" data-anim-duration="0.6" data-anim-stagger="0.025" data-anim-pattern="pop"><span class="w"><span class="char">S</span><span class="char">u</span><span class="char">b</span><span class="char">e</span></span> <span class="w"><span class="char">e</span><span class="char">l</span></span> <span class="w"><span class="char">f</span><span class="char">o</span><span class="char">l</span><span class="char">d</span><span class="char">e</span><span class="char">r</span></span> <span class="w"><span class="char">a</span><span class="char">l</span></span> <span class="w"><span class="char">c</span><span class="char">h</span><span class="char">a</span><span class="char">t</span></span></h1>
+<div class="chatwin">
+  <div class="att" id="card-07-att" data-anim="slide-in" data-anim-at="1.0" data-anim-duration="0.5" data-anim-from="top" data-anim-distance="90"><span class="ico" style="width:54px;height:54px;"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linejoin="round"><path d="M6 16a4 4 0 0 1 4-4h14l6 7h24a4 4 0 0 1 4 4v27a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4z"/><path d="M6 26h52"/></svg></span><div class="grow"><div class="an">folder / documentos</div><div class="track"><div class="fill" id="card-07-fill" data-anim="morph-to" data-anim-at="1.5" data-anim-duration="1.4" data-anim-from="{&quot;scaleX&quot;: 0}" data-anim-props="{&quot;scaleX&quot;: 1}"></div></div></div><span class="okc" id="card-07-ok" data-anim="scale-pop" data-anim-at="3.0" data-anim-duration="0.4"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 33l12 12 24-26"/></svg></span></div>
+  <div class="input mono"><span class="tw" id="card-07-cmd" data-anim="typewriter" data-anim-at="8.0" data-anim-duration="1.5"><span class="w"><span class="char">/</span><span class="char">s</span><span class="char">k</span><span class="char">i</span><span class="char">l</span><span class="char">l</span><span class="char">-</span><span class="char">c</span><span class="char">r</span><span class="char">e</span><span class="char">a</span><span class="char">t</span><span class="char">o</span><span class="char">r</span></span></span></div>
+</div>
+</div>
+</div>
+</div>
+<div class="card-host clip" id="host-card-08" data-card-id="card-08" data-start="119.0" data-duration="12.5" data-track-index="3" style="left:0;top:872px;width:1080px;height:1048px;">
+<div class="card" data-card-id="card-08">
+<style>
+.card[data-card-id="card-08"] .cmdbig { font-size:84px; font-weight:700; padding:36px 40px; border-radius:28px; background:#0e0d0c; border:2px solid var(--acc); align-self:flex-start; }
+.card[data-card-id="card-08"] .sl { color:var(--acc); }
+.card[data-card-id="card-08"] .tags { display:flex; gap:18px; flex-wrap:wrap; }
+.card[data-card-id="card-08"] .loop { display:flex; align-items:center; gap:30px; margin-top:14px; }
+.card[data-card-id="card-08"] .blk { width:220px; height:150px; border-radius:26px; background:var(--panel); border:2px solid var(--line); display:flex; align-items:center; justify-content:center; font:700 44px/1 'JetBrains Mono'; }
+.card[data-card-id="card-08"] .acc-b { border-color:var(--acc); color:var(--acc); }
+.card[data-card-id="card-08"] .arr { display:flex; flex-direction:column; align-items:center; gap:6px; color:var(--muted); font-size:26px; }
+
+.card[data-card-id="card-08"] { --acc: var(--accent-1); }
+</style>
+<div class="root">
+<div class="kicker" id="card-08-kicker" data-anim="fade-in" data-anim-at="0.2" data-anim-duration="0.4">Ya viene en Claude</div>
+<div class="cmdbig mono" id="card-08-cmd" data-anim="scale-pop" data-anim-at="0.4" data-anim-duration="0.55"><span class="sl">/</span>skill-creator</div>
+<div class="tags">
+  <span class="chip" id="card-08-tag1" data-anim="fade-in" data-anim-at="4.7" data-anim-duration="0.4">Desde que descargas Claude</span>
+  <span class="chip solid" id="card-08-tag2" data-anim="scale-pop" data-anim-at="8.0" data-anim-duration="0.45">Por defecto</span>
+</div>
+<div class="loop">
+  <div class="blk" id="card-08-b1" data-anim="scale-pop" data-anim-at="10.3" data-anim-duration="0.45">skill</div>
+  <div class="arr" id="card-08-arr" data-anim="mask-reveal" data-anim-at="10.8" data-anim-duration="0.4" data-anim-direction="left"><span class="ico" style="width:90px;height:90px;"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 32h42M38 18l14 14-14 14"/></svg></span><span class="mono">crea</span></div>
+  <div class="blk acc-b" id="card-08-b2" data-anim="scale-pop" data-anim-at="11.4" data-anim-duration="0.45">skill</div>
+</div>
+<h1 class="title sm" id="card-08-title" data-anim="kinetic-chars" data-anim-at="10.0" data-anim-duration="0.6" data-anim-stagger="0.025" data-anim-pattern="pop"><span class="w"><span class="char">U</span><span class="char">n</span><span class="char">a</span></span> <span class="w"><span class="char">s</span><span class="char">k</span><span class="char">i</span><span class="char">l</span><span class="char">l</span></span> <span class="w"><span class="char">q</span><span class="char">u</span><span class="char">e</span></span> <span class="w"><span class="char">c</span><span class="char">r</span><span class="char">e</span><span class="char">a</span></span> <span class="w"><span class="char">s</span><span class="char">k</span><span class="char">i</span><span class="char">l</span><span class="char">l</span><span class="char">s</span></span></h1>
+</div>
+</div>
+</div>
+<div class="card-host clip" id="host-card-09" data-card-id="card-09" data-start="131.5" data-duration="14.2" data-track-index="2" style="left:0;top:872px;width:1080px;height:1048px;">
+<div class="card" data-card-id="card-09">
+<style>
+.card[data-card-id="card-09"] .input.big { font-size:50px; line-height:1.35; min-height:330px; padding:40px; color:var(--text); }
+.card[data-card-id="card-09"] .input.big .w:first-child { color:var(--acc); }
+.card[data-card-id="card-09"] .sendrow { display:flex; align-items:center; justify-content:space-between; gap:24px; }
+.card[data-card-id="card-09"] .send { width:96px; height:96px; border-radius:50%; background:var(--acc); color:#141312; display:flex; align-items:center; justify-content:center; flex:none; }
+.card[data-card-id="card-09"] .send svg { width:56px; height:56px; }
+
+.card[data-card-id="card-09"] { --acc: var(--accent-0); }
+</style>
+<div class="root">
+<div class="kicker" id="card-09-kicker" data-anim="fade-in" data-anim-at="0.2" data-anim-duration="0.4">Lo que escribes</div>
+<h1 class="title" id="card-09-title" data-anim="kinetic-chars" data-anim-at="0.3" data-anim-duration="0.5" data-anim-stagger="0.025" data-anim-pattern="pop"><span class="w"><span class="char">U</span><span class="char">n</span></span> <span class="w"><span class="char">s</span><span class="char">o</span><span class="char">l</span><span class="char">o</span></span> <span class="w"><span class="char">m</span><span class="char">e</span><span class="char">n</span><span class="char">s</span><span class="char">a</span><span class="char">j</span><span class="char">e</span></span></h1>
+<div class="input big mono"><span class="tw" id="card-09-prompt" data-anim="typewriter" data-anim-at="1.8" data-anim-duration="10.4"><span class="w"><span class="char">/</span><span class="char">s</span><span class="char">k</span><span class="char">i</span><span class="char">l</span><span class="char">l</span><span class="char">-</span><span class="char">c</span><span class="char">r</span><span class="char">e</span><span class="char">a</span><span class="char">t</span><span class="char">o</span><span class="char">r</span></span> <span class="w"><span class="char">c</span><span class="char">o</span><span class="char">n</span></span> <span class="w"><span class="char">e</span><span class="char">l</span></span> <span class="w"><span class="char">f</span><span class="char">o</span><span class="char">l</span><span class="char">d</span><span class="char">e</span><span class="char">r</span></span> <span class="w"><span class="char">q</span><span class="char">u</span><span class="char">e</span></span> <span class="w"><span class="char">a</span><span class="char">c</span><span class="char">a</span><span class="char">b</span><span class="char">o</span></span> <span class="w"><span class="char">d</span><span class="char">e</span></span> <span class="w"><span class="char">s</span><span class="char">u</span><span class="char">b</span><span class="char">i</span><span class="char">r</span></span></span></div>
+<div class="sendrow"><span class="lead">Claude recibe el folder y el comando</span><span class="send" id="card-09-send" data-anim="scale-pop" data-anim-at="12.5" data-anim-duration="0.4"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><path d="M32 52V14M18 28l14-14 14 14"/></svg></span></div>
+</div>
+</div>
+</div>
+<div class="card-host clip" id="host-card-10" data-card-id="card-10" data-start="145.7" data-duration="30.4" data-track-index="3" style="left:0;top:872px;width:1080px;height:1048px;">
+<div class="card" data-card-id="card-10">
+<style>
+.card[data-card-id="card-10"] .inrow { display:flex; align-items:center; gap:22px; }
+.card[data-card-id="card-10"] .node { display:flex; align-items:center; gap:16px; padding:22px 30px; border-radius:20px; background:var(--panel); border:2px solid var(--line); font:700 34px/1 'Inter'; }
+.card[data-card-id="card-10"] .acc-n { font-family:'JetBrains Mono'; color:var(--acc); border-color:var(--acc); }
+.card[data-card-id="card-10"] .plus { font:700 48px/1 'Inter'; color:var(--muted); }
+.card[data-card-id="card-10"] .down { color:var(--acc); align-self:center; height:70px; }
+.card[data-card-id="card-10"] .skillbox { padding:26px; border-radius:28px; border:3px solid var(--acc); background:var(--panel); display:flex; flex-direction:column; gap:14px; }
+.card[data-card-id="card-10"] .sbh { font-size:24px; letter-spacing:.2em; color:var(--acc); }
+.card[data-card-id="card-10"] .layer { display:flex; align-items:center; gap:20px; padding:20px 24px; border-radius:16px; background:var(--panel-2); font:700 34px/1.2 'Inter'; }
+.card[data-card-id="card-10"] .layer.best { background:var(--acc); color:#141312; }
+.card[data-card-id="card-10"] .ln { font-size:26px; opacity:.75; }
+.card[data-card-id="card-10"] .agent { align-self:flex-start; }
+
+.card[data-card-id="card-10"] { --acc: var(--accent-2); }
+</style>
+<div class="root">
+<div class="kicker" id="card-10-kicker" data-anim="fade-in" data-anim-at="0.2" data-anim-duration="0.4">Claude trabaja</div>
+<h1 class="title" id="card-10-title" data-anim="kinetic-chars" data-anim-at="0.3" data-anim-duration="0.6" data-anim-stagger="0.025" data-anim-pattern="pop"><span class="w"><span class="char">C</span><span class="char">l</span><span class="char">a</span><span class="char">u</span><span class="char">d</span><span class="char">e</span></span> <span class="w"><span class="char">a</span><span class="char">r</span><span class="char">m</span><span class="char">a</span></span> <span class="w"><span class="char">l</span><span class="char">a</span></span> <span class="w"><span class="char">s</span><span class="char">k</span><span class="char">i</span><span class="char">l</span><span class="char">l</span></span></h1>
+<div class="inrow">
+  <div class="node" id="card-10-n1" data-anim="slide-in" data-anim-at="1.2" data-anim-duration="0.5" data-anim-from="left" data-anim-distance="60"><span class="ico" style="width:48px;height:48px;color:var(--muted)"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linejoin="round"><path d="M6 16a4 4 0 0 1 4-4h14l6 7h24a4 4 0 0 1 4 4v27a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4z"/><path d="M6 26h52"/></svg></span><span>Material</span></div>
+  <span class="plus" id="card-10-plus" data-anim="fade-in" data-anim-at="8.7" data-anim-duration="0.3">+</span>
+  <div class="node mono acc-n" id="card-10-n2" data-anim="scale-pop" data-anim-at="8.9" data-anim-duration="0.5">/skill-creator</div>
+</div>
+<div class="down" id="card-10-down" data-anim="mask-reveal" data-anim-at="10.5" data-anim-duration="0.5" data-anim-direction="top"><span class="ico" style="width:70px;height:70px;"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><path d="M32 8v46M18 40l14 14 14-14"/></svg></span></div>
+<div class="skillbox">
+  <div class="sbh mono">SKILL</div>
+  <div class="layer" id="card-10-l1" data-anim="slide-in" data-anim-at="14.3" data-anim-duration="0.45" data-anim-from="bottom" data-anim-distance="40"><span class="ln mono">1</span>Estructura de prompt</div>
+  <div class="layer" id="card-10-l2" data-anim="slide-in" data-anim-at="17.7" data-anim-duration="0.45" data-anim-from="bottom" data-anim-distance="40"><span class="ln mono">2</span>Las partes de la skill</div>
+  <div class="layer best" id="card-10-l3" data-anim="slide-in" data-anim-at="21.7" data-anim-duration="0.45" data-anim-from="bottom" data-anim-distance="40"><span class="ln mono">3</span>La mejor prompt</div>
+</div>
+<div class="badge agent" id="card-10-agent" data-anim="scale-pop" data-anim-at="26.7" data-anim-duration="0.5"><span class="ico" style="width:44px;height:44px;"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 30a18 18 0 0 1 32-11l4 5"/><path d="M50 12v12H38"/><path d="M50 34a18 18 0 0 1-32 11l-4-5"/><path d="M14 52V40h12"/></svg></span><span>Repetible: actúa como un agente</span></div>
+</div>
+</div>
+</div>
+<div class="card-host clip" id="host-card-11" data-card-id="card-11" data-start="176.1" data-duration="31.6" data-track-index="2" style="left:0;top:872px;width:1080px;height:1048px;">
+<div class="card" data-card-id="card-11">
+<style>
+.card[data-card-id="card-11"] .opt { display:flex; gap:26px; padding:28px; border-radius:24px; background:var(--panel); border:2px solid var(--line); }
+.card[data-card-id="card-11"] .onum { width:68px; height:68px; flex:none; border-radius:50%; background:var(--acc); color:#141312; font:700 36px/68px 'Inter'; text-align:center; }
+.card[data-card-id="card-11"] .ot { font:700 40px/1.2 'Inter'; }
+.card[data-card-id="card-11"] .os { font:400 30px/1.3 'Inter'; color:var(--muted); margin-top:10px; }
+.card[data-card-id="card-11"] .slash { font-size:34px; margin-top:16px; padding:18px 24px; min-height:0; }
+.card[data-card-id="card-11"] .bubble { position:relative; align-self:flex-end; max-width:760px; padding:28px 34px; border-radius:28px 28px 6px 28px; background:var(--panel-2); border:2px solid var(--acc); font:700 36px/1.3 'Inter'; }
+.card[data-card-id="card-11"] .nopide { align-self:flex-end; }
+
+.card[data-card-id="card-11"] { --acc: var(--accent-3); }
+</style>
+<div class="root">
+<div class="kicker" id="card-11-kicker" data-anim="fade-in" data-anim-at="0.1" data-anim-duration="0.4">Cómo se activa</div>
+<h1 class="title sm" id="card-11-title" data-anim="kinetic-chars" data-anim-at="0.2" data-anim-duration="0.7" data-anim-stagger="0.025" data-anim-pattern="pop"><span class="w"><span class="char">D</span><span class="char">o</span><span class="char">s</span></span> <span class="w"><span class="char">f</span><span class="char">o</span><span class="char">r</span><span class="char">m</span><span class="char">a</span><span class="char">s</span></span> <span class="w"><span class="char">d</span><span class="char">e</span></span> <span class="w"><span class="char">u</span><span class="char">s</span><span class="char">a</span><span class="char">r</span></span> <span class="w"><span class="char">u</span><span class="char">n</span><span class="char">a</span></span> <span class="w"><span class="char">s</span><span class="char">k</span><span class="char">i</span><span class="char">l</span><span class="char">l</span></span></h1>
+<div class="opt" id="card-11-o1" data-anim="slide-in" data-anim-at="1.8" data-anim-duration="0.5" data-anim-from="left" data-anim-distance="70">
+  <span class="onum">1</span>
+  <div class="grow"><div class="ot">Tú la llamas</div><div class="input mono slash"><span class="acc">/</span><span id="card-11-o1c" data-anim="fade-in" data-anim-at="6.7" data-anim-duration="0.5"> búscala y ponla</span></div></div>
+</div>
+<div class="opt" id="card-11-o2" data-anim="slide-in" data-anim-at="10.9" data-anim-duration="0.5" data-anim-from="left" data-anim-distance="70">
+  <span class="onum">2</span>
+  <div class="grow"><div class="ot">Claude la usa solo</div><div class="os" id="card-11-o2s" data-anim="fade-in" data-anim-at="12.9" data-anim-duration="0.4">Es autónomo: sabe cuándo le sirve una skill</div></div>
+</div>
+<div class="bubble" id="card-11-bubble" data-anim="scale-pop" data-anim-at="22.2" data-anim-duration="0.5">«Me acuerdo de esta skill. Voy a utilizarla.»</div>
+<span class="chip solid nopide" id="card-11-nopide" data-anim="blur-in" data-anim-at="26.1" data-anim-duration="0.5">Sin que se lo pidas</span>
+</div>
+</div>
+</div>
+<div class="card-host clip" id="host-card-12" data-card-id="card-12" data-start="207.7" data-duration="14.2" data-track-index="3" style="left:0;top:872px;width:1080px;height:1048px;">
+<div class="card" data-card-id="card-12">
+<style>
+.card[data-card-id="card-12"] .saved { display:flex; align-items:center; gap:34px; margin-top:20px; }
+.card[data-card-id="card-12"] .bigok { width:150px; height:150px; flex:none; border-radius:50%; background:var(--acc); color:#141312; display:flex; align-items:center; justify-content:center; }
+.card[data-card-id="card-12"] .opt { display:flex; align-items:center; gap:26px; padding:30px; border-radius:24px; background:var(--panel); border:2px solid var(--line); }
+.card[data-card-id="card-12"] .onum { width:68px; height:68px; flex:none; border-radius:50%; background:var(--acc); color:#141312; font:700 36px/68px 'Inter'; text-align:center; }
+.card[data-card-id="card-12"] .ot { font:700 40px/1.2 'Inter'; }
+.card[data-card-id="card-12"] .btnwrap { position:relative; }
+.card[data-card-id="card-12"] .btn { position:relative; display:inline-block; padding:20px 36px; border-radius:14px; background:var(--text); color:#141312; font:700 32px/1 'Inter'; }
+.card[data-card-id="card-12"] .ripple { position:absolute; left:50%; top:50%; width:140px; height:140px; margin:-70px 0 0 -70px; border-radius:50%; border:4px solid var(--acc); }
+.card[data-card-id="card-12"] .tease { color:var(--text); }
+
+.card[data-card-id="card-12"] { --acc: var(--accent-2); }
+</style>
+<div class="root">
+<div class="saved"><span class="bigok"><svg class="ico" style="width:110px;height:110px" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><path pathLength="1" d="M14 33l12 12 24-26" id="card-12-chk" data-anim="draw-path" data-anim-at="0.2" data-anim-duration="0.6"/></svg></span><h1 class="title" id="card-12-title" data-anim="kinetic-chars" data-anim-at="0.7" data-anim-duration="0.6" data-anim-stagger="0.025" data-anim-pattern="pop"><span class="w"><span class="char">S</span><span class="char">k</span><span class="char">i</span><span class="char">l</span><span class="char">l</span></span> <span class="w"><span class="char">g</span><span class="char">u</span><span class="char">a</span><span class="char">r</span><span class="char">d</span><span class="char">a</span><span class="char">d</span><span class="char">a</span></span></h1></div>
+<p class="lead" id="card-12-two" data-anim="fade-in" data-anim-at="3.7" data-anim-duration="0.4">Dos maneras de guardarla:</p>
+<div class="opt" id="card-12-o1" data-anim="slide-in" data-anim-at="7.6" data-anim-duration="0.5" data-anim-from="left" data-anim-distance="70">
+  <span class="onum">1</span><div class="ot grow">Pinchar el botón</div>
+  <div class="btnwrap"><span class="ripple" id="card-12-ripple" data-anim="morph-to" data-anim-at="9.7" data-anim-duration="0.7" data-anim-from="{&quot;scale&quot;: 0.2, &quot;opacity&quot;: 0.8}" data-anim-props="{&quot;scale&quot;: 2.2, &quot;opacity&quot;: 0}"></span><span class="btn">Guardar</span></div>
+</div>
+<p class="lead tease" id="card-12-tease" data-anim="fade-in" data-anim-at="11.1" data-anim-duration="0.5">Y hay otra cosa interesante...</p>
+</div>
+</div>
+</div>
+<div class="card-host clip" id="host-card-13" data-card-id="card-13" data-start="221.9" data-duration="12.5" data-track-index="2" style="left:0;top:872px;width:1080px;height:1048px;">
+<div class="card" data-card-id="card-13">
+<style>
+.card[data-card-id="card-13"] .path { display:flex; flex-wrap:wrap; align-items:center; gap:16px; margin-top:40px; }
+.card[data-card-id="card-13"] .sep { color:var(--muted); }
+
+.card[data-card-id="card-13"] { --acc: var(--accent-3); }
+</style>
+<div class="root">
+<div class="kicker" id="card-13-kicker" data-anim="fade-in" data-anim-at="0.1" data-anim-duration="0.4">Manera 2</div>
+<h1 class="title" id="card-13-title" data-anim="kinetic-chars" data-anim-at="0.2" data-anim-duration="0.7" data-anim-stagger="0.025" data-anim-pattern="pop"><span class="w"><span class="char">S</span><span class="char">u</span><span class="char">b</span><span class="char">e</span></span> <span class="w"><span class="char">s</span><span class="char">k</span><span class="char">i</span><span class="char">l</span><span class="char">l</span><span class="char">s</span></span> <span class="w"><span class="char">d</span><span class="char">e</span></span> <span class="w"><span class="char">o</span><span class="char">t</span><span class="char">r</span><span class="char">a</span><span class="char">s</span></span> <span class="w"><span class="char">p</span><span class="char">e</span><span class="char">r</span><span class="char">s</span><span class="char">o</span><span class="char">n</span><span class="char">a</span><span class="char">s</span></span></h1>
+<div class="path">
+  <span class="chip big" id="card-13-p1" data-anim="scale-pop" data-anim-at="7.3" data-anim-duration="0.45">Customize</span>
+  <span class="sep" id="card-13-s1" data-anim="fade-in" data-anim-at="8.4" data-anim-duration="0.3"><span class="ico" style="width:56px;height:56px;"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 32h42M38 18l14 14-14 14"/></svg></span></span>
+  <span class="chip big" id="card-13-p2" data-anim="scale-pop" data-anim-at="8.7" data-anim-duration="0.45">Agregar</span>
+  <span class="sep" id="card-13-s2" data-anim="fade-in" data-anim-at="9.9" data-anim-duration="0.3"><span class="ico" style="width:56px;height:56px;"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 32h42M38 18l14 14-14 14"/></svg></span></span>
+  <span class="chip big solid" id="card-13-p3" data-anim="scale-pop" data-anim-at="10.2" data-anim-duration="0.45"><span class="ico" style="width:40px;height:40px;"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M32 42V10M20 22l12-12 12 12"/><path d="M10 40v12a4 4 0 0 0 4 4h36a4 4 0 0 0 4-4V40"/></svg></span>Skill</span>
+</div>
+</div>
+</div>
+</div>
+<div class="card-host clip" id="host-card-14" data-card-id="card-14" data-start="234.4" data-duration="16.6" data-track-index="3" style="left:0;top:872px;width:1080px;height:1048px;">
+<div class="card" data-card-id="card-14">
+<style>
+.card[data-card-id="card-14"] .post { display:flex; align-items:flex-start; gap:22px; }
+.card[data-card-id="card-14"] .av { width:76px; height:76px; flex:none; border-radius:50%; background:var(--panel-2); color:var(--muted); display:flex; align-items:center; justify-content:center; }
+.card[data-card-id="card-14"] .av svg { width:46px; height:46px; }
+.card[data-card-id="card-14"] .pb { padding:26px 32px; border-radius:6px 28px 28px 28px; background:var(--panel); border:2px solid var(--acc); font:700 40px/1.25 'Inter'; }
+.card[data-card-id="card-14"] .files { display:flex; gap:20px; }
+.card[data-card-id="card-14"] .file { flex:1; display:flex; flex-direction:column; align-items:center; gap:16px; padding:30px 10px; border-radius:24px; background:var(--panel); border:2px solid var(--line); color:var(--acc); font-size:32px; }
+.card[data-card-id="card-14"] .file .mono { color:var(--text); font-weight:700; }
+.card[data-card-id="card-14"] .works { display:flex; align-items:center; gap:20px; font:700 38px/1.2 'Inter'; }
+.card[data-card-id="card-14"] .okc { width:64px; height:64px; flex:none; border-radius:50%; background:var(--accent-2); color:#141312; display:flex; align-items:center; justify-content:center; }
+
+.card[data-card-id="card-14"] { --acc: var(--accent-1); }
+</style>
+<div class="root">
+<div class="kicker" id="card-14-kicker" data-anim="fade-in" data-anim-at="0.2" data-anim-duration="0.4">En redes sociales</div>
+<div class="post" id="card-14-post" data-anim="scale-pop" data-anim-at="0.4" data-anim-duration="0.5">
+  <span class="av"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4"><circle cx="32" cy="24" r="10"/><path d="M12 56c2-11 10-16 20-16s18 5 20 16"/></svg></span>
+  <div class="pb">«Comenta y te envío mis skills»</div>
+</div>
+<p class="lead" id="card-14-lead" data-anim="fade-in" data-anim-at="5.8" data-anim-duration="0.4">Muchas veces ya vienen listas en:</p>
+<div class="files">
+  <div class="file" id="card-14-f1" data-anim="scale-pop" data-anim-at="9.2" data-anim-duration="0.45"><span class="ico" style="width:70px;height:70px;"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linejoin="round"><path d="M14 6h26l12 12v40H14z"/><path d="M40 6v12h12"/><path d="M22 32h22M22 41h22M22 50h14"/></svg></span><span class="mono">.zip</span></div>
+  <div class="file" id="card-14-f2" data-anim="scale-pop" data-anim-at="10.4" data-anim-duration="0.45"><span class="ico" style="width:70px;height:70px;"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linejoin="round"><path d="M14 6h26l12 12v40H14z"/><path d="M40 6v12h12"/><path d="M22 32h22M22 41h22M22 50h14"/></svg></span><span class="mono">skill file</span></div>
+  <div class="file" id="card-14-f3" data-anim="scale-pop" data-anim-at="11.6" data-anim-duration="0.45"><span class="ico" style="width:70px;height:70px;"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linejoin="round"><path d="M14 6h26l12 12v40H14z"/><path d="M40 6v12h12"/><path d="M22 32h22M22 41h22M22 50h14"/></svg></span><span class="mono">.md</span></div>
+</div>
+<div class="works"><span class="okc"><svg class="ico" style="width:44px;height:44px" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><path pathLength="1" d="M14 33l12 12 24-26" id="card-14-chk" data-anim="draw-path" data-anim-at="13.4" data-anim-duration="0.5"/></svg></span><span id="card-14-w" data-anim="fade-in" data-anim-at="13.3" data-anim-duration="0.4">Las subes y funcionan sin problema</span></div>
+</div>
+</div>
+</div>
+<div class="card-host clip" id="host-card-15" data-card-id="card-15" data-start="251.0" data-duration="23.3" data-track-index="2" style="left:0;top:872px;width:1080px;height:1048px;">
+<div class="card" data-card-id="card-15">
+<style>
+.card[data-card-id="card-15"] .chatline { display:flex; align-items:center; gap:18px; font:400 34px/1.2 'Inter'; color:var(--muted); }
+.card[data-card-id="card-15"] .pop { display:flex; flex-direction:column; gap:10px; padding:18px; border-radius:22px; background:var(--panel); border:2px solid var(--line); }
+.card[data-card-id="card-15"] .it { display:flex; align-items:center; gap:16px; padding:20px 22px; border-radius:14px; font:700 34px/1 'Inter'; }
+.card[data-card-id="card-15"] .it.hl { background:var(--panel-2); border:2px solid var(--acc); color:var(--acc); }
+.card[data-card-id="card-15"] .it.hl span:last-child { color:var(--text); }
+.card[data-card-id="card-15"] .sk { display:block; width:60%; height:20px; border-radius:10px; background:var(--panel-2); }
+.card[data-card-id="card-15"] .input { font-size:48px; padding:24px 32px; min-height:0; }
+.card[data-card-id="card-15"] .caret { display:inline-block; width:4px; height:52px; background:var(--text); margin-left:6px; vertical-align:middle; }
+.card[data-card-id="card-15"] .launch { align-self:flex-start; }
+
+.card[data-card-id="card-15"] { --acc: var(--accent-0); }
+</style>
+<div class="root">
+<div class="kicker" id="card-15-kicker" data-anim="fade-in" data-anim-at="0.2" data-anim-duration="0.4">Usar la skill</div>
+<h1 class="title" id="card-15-title" data-anim="kinetic-chars" data-anim-at="0.3" data-anim-duration="0.6" data-anim-stagger="0.025" data-anim-pattern="pop"><span class="w"><span class="char">A</span><span class="char">h</span><span class="char">o</span><span class="char">r</span><span class="char">a</span></span> <span class="w"><span class="char">t</span><span class="char">o</span><span class="char">c</span><span class="char">a</span></span> <span class="w"><span class="char">u</span><span class="char">s</span><span class="char">a</span><span class="char">r</span><span class="char">l</span><span class="char">a</span></span></h1>
+<div class="chatline" id="card-15-back" data-anim="fade-in" data-anim-at="2.0" data-anim-duration="0.4"><span class="ico" style="width:44px;height:44px;color:var(--muted)"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"><path d="M8 12h48v32H28l-12 10V44H8z"/></svg></span><span>De vuelta al último chat</span></div>
+<div class="pop" id="card-15-pop" data-anim="slide-in" data-anim-at="11.2" data-anim-duration="0.5" data-anim-from="bottom" data-anim-distance="50">
+  <div class="it"><span class="sk"></span></div>
+  <div class="it hl" id="card-15-hl" data-anim="morph-to" data-anim-at="14.6" data-anim-duration="0.4" data-anim-from="{&quot;opacity&quot;: 0.35}" data-anim-props="{&quot;opacity&quot;: 1}"><span class="ico" style="width:34px;height:34px;"><svg viewBox="0 0 64 64" fill="currentColor"><path d="M32 4l6 20 20 8-20 8-6 20-6-20-20-8 20-8z"/></svg></span><span>Tu skill nueva</span></div>
+  <div class="it"><span class="sk" style="width:46%"></span></div>
+</div>
+<div class="input mono"><span class="acc">/</span><span class="caret"></span></div>
+<span class="chip solid launch" id="card-15-launch" data-anim="scale-pop" data-anim-at="17.6" data-anim-duration="0.5">Lanzar la skill</span>
+</div>
+</div>
+</div>
+<div class="card-host clip" id="host-card-16" data-card-id="card-16" data-start="274.3" data-duration="18.1" data-track-index="3" style="left:0;top:872px;width:1080px;height:1048px;">
+<div class="card" data-card-id="card-16">
+<style>
+.card[data-card-id="card-16"] .mega { color:var(--acc); margin-top:20px; }
+.card[data-card-id="card-16"] .q { font:700 96px/1.06 'Inter'; letter-spacing:-0.03em; margin:0; }
+.card[data-card-id="card-16"] .qw { display:inline-block; }
+.card[data-card-id="card-16"] .qw.hot { color:var(--acc); }
+
+.card[data-card-id="card-16"] { --acc: var(--accent-4); }
+</style>
+<div class="root">
+<div class="kicker" id="card-16-kicker" data-anim="fade-in" data-anim-at="0.2" data-anim-duration="0.4">La pieza publicitaria</div>
+<div class="mega"><span class="ico" style="width:130px;height:130px;"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"><path d="M10 26v12h10l22 12V14L20 26z"/><path d="M50 24c4 4 4 12 0 16"/></svg></span></div>
+<h1 class="q"><span class="qw" id="card-16-w0" data-anim="blur-in" data-anim-at="0.1" data-anim-duration="0.5">Lo</span> <span class="qw" id="card-16-w1" data-anim="blur-in" data-anim-at="1.6" data-anim-duration="0.5">que</span> <span class="qw" id="card-16-w2" data-anim="blur-in" data-anim-at="3.0" data-anim-duration="0.5">tenemos</span> <span class="qw" id="card-16-w3" data-anim="blur-in" data-anim-at="4.5" data-anim-duration="0.5">que</span> <span class="qw" id="card-16-w4" data-anim="blur-in" data-anim-at="5.9" data-anim-duration="0.5">pensar</span> <span class="qw" id="card-16-w5" data-anim="blur-in" data-anim-at="7.4" data-anim-duration="0.5">en</span> <span class="qw" id="card-16-w6" data-anim="blur-in" data-anim-at="8.8" data-anim-duration="0.5">esta</span> <span class="qw hot" id="card-16-w7" data-anim="blur-in" data-anim-at="10.3" data-anim-duration="0.5">pieza</span> <span class="qw hot" id="card-16-w8" data-anim="blur-in" data-anim-at="11.7" data-anim-duration="0.5">publicitaria</span> <span class="qw" id="card-16-w9" data-anim="blur-in" data-anim-at="12.8" data-anim-duration="0.5">es que...</span></h1>
+</div>
+</div>
+</div>
+<div class="card-host clip" id="host-card-17" data-card-id="card-17" data-start="292.4" data-duration="46.7" data-track-index="2" style="left:0;top:872px;width:1080px;height:1048px;">
+<div class="card" data-card-id="card-17">
+<style>
+.card[data-card-id="card-17"] .doc { display:flex; flex-direction:column; padding:30px 34px; border-radius:28px; background:#F3EEE6; color:#1d1b19; }
+.card[data-card-id="card-17"] .dh { display:flex; align-items:center; justify-content:space-between; padding-bottom:18px; border-bottom:3px solid #1d1b19; margin-bottom:6px; }
+.card[data-card-id="card-17"] .dh .dt { font:700 40px/1 'Inter'; letter-spacing:-0.01em; }
+.card[data-card-id="card-17"] .dh .dk { font:700 22px/1 'JetBrains Mono'; letter-spacing:.14em; color:#9a4a2e; }
+.card[data-card-id="card-17"] .fld { padding:16px 0; border-bottom:2px solid #d9d2c6; }
+.card[data-card-id="card-17"] .fld:last-child { border-bottom:0; }
+.card[data-card-id="card-17"] .fl { font-size:20px; letter-spacing:.14em; text-transform:uppercase; color:#6b655d; margin-bottom:8px; }
+.card[data-card-id="card-17"] .fv { font:700 32px/1.25 'Inter'; }
+.card[data-card-id="card-17"] .no .fv { color:#a3311c; }
+
+.card[data-card-id="card-17"] { --acc: var(--accent-0); }
+</style>
+<div class="root">
+<div class="doc" id="card-17-doc" data-anim="slide-in" data-anim-at="0.1" data-anim-duration="0.5" data-anim-from="bottom" data-anim-distance="60">
+  <div class="dh"><span class="dt">Brief · Evento de Navidad</span><span class="dk">BORRADOR</span></div>
+  <div class="fld "><div class="fl mono" id="card-17-f1-l" data-anim="fade-in" data-anim-at="0.8" data-anim-duration="0.3">Objetivo</div><div class="fv" id="card-17-f1" data-anim="slide-in" data-anim-at="1.0" data-anim-duration="0.45" data-anim-from="left" data-anim-distance="50">Que los estudiantes vayan al evento de Navidad</div></div>
+  <div class="fld "><div class="fl mono" id="card-17-f2-l" data-anim="fade-in" data-anim-at="10.1" data-anim-duration="0.3">Canal</div><div class="fv" id="card-17-f2" data-anim="slide-in" data-anim-at="10.3" data-anim-duration="0.45" data-anim-from="left" data-anim-distance="50">Redes de la universidad + envío a todos los estudiantes</div></div>
+  <div class="fld "><div class="fl mono" id="card-17-f3-l" data-anim="fade-in" data-anim-at="18.5" data-anim-duration="0.3">Reacción esperada</div><div class="fv" id="card-17-f3" data-anim="slide-in" data-anim-at="18.7" data-anim-duration="0.45" data-anim-from="left" data-anim-distance="50">Que quieran ir al evento</div></div>
+  <div class="fld "><div class="fl mono" id="card-17-f4-l" data-anim="fade-in" data-anim-at="23.1" data-anim-duration="0.3">Logo obligatorio</div><div class="fv" id="card-17-f4" data-anim="slide-in" data-anim-at="23.3" data-anim-duration="0.45" data-anim-from="left" data-anim-distance="50">Logo de la universidad</div></div>
+  <div class="fld "><div class="fl mono" id="card-17-f5-l" data-anim="fade-in" data-anim-at="26.1" data-anim-duration="0.3">Aprobación</div><div class="fv" id="card-17-f5" data-anim="slide-in" data-anim-at="26.3" data-anim-duration="0.45" data-anim-from="left" data-anim-distance="50">Se envía en noviembre para que lo aprueben</div></div>
+  <div class="fld no"><div class="fl mono" id="card-17-f6-l" data-anim="fade-in" data-anim-at="33.6" data-anim-duration="0.3">No puede aparecer</div><div class="fv" id="card-17-f6" data-anim="slide-in" data-anim-at="33.8" data-anim-duration="0.45" data-anim-from="left" data-anim-distance="50">Nada fuera de la guía de IA de la universidad</div></div>
+  <div class="fld no"><div class="fl mono" id="card-17-f7-l" data-anim="fade-in" data-anim-at="43.3" data-anim-duration="0.3">No puede aparecer</div><div class="fv" id="card-17-f7" data-anim="slide-in" data-anim-at="43.5" data-anim-duration="0.45" data-anim-from="left" data-anim-distance="50">Nada explícito ni grosero</div></div>
+</div>
+</div>
+</div>
+</div>
+<div class="card-host clip" id="host-card-18" data-card-id="card-18" data-start="339.1" data-duration="42.4" data-track-index="3" style="left:0;top:872px;width:1080px;height:1048px;">
+<div class="card" data-card-id="card-18">
+<style>
+.card[data-card-id="card-18"] .grid { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+.card[data-card-id="card-18"] .tile { padding:26px 30px; border-radius:24px; background:var(--panel); border:2px solid var(--line); }
+.card[data-card-id="card-18"] .tile.wide { grid-column:span 2; }
+.card[data-card-id="card-18"] .tv { font:700 92px/1 'Inter'; letter-spacing:-0.03em; color:var(--acc); font-variant-numeric:tabular-nums; }
+.card[data-card-id="card-18"] .tl { font:400 28px/1.2 'Inter'; color:var(--muted); margin-top:12px; }
+.card[data-card-id="card-18"] .places { display:flex; align-items:center; gap:30px; font:700 64px/1 'Inter'; }
+.card[data-card-id="card-18"] .old { position:relative; color:var(--muted); }
+.card[data-card-id="card-18"] .strike { position:absolute; left:-6px; right:-6px; top:50%; height:6px; margin-top:-3px; background:var(--accent-1); border-radius:3px; transform-origin:left center; }
+.card[data-card-id="card-18"] .new { color:var(--acc); }
+.card[data-card-id="card-18"] .insight { display:flex; align-items:center; gap:22px; padding:26px 30px; border-radius:24px; background:var(--acc); color:#141312; font:700 34px/1.25 'Inter'; }
+
+.card[data-card-id="card-18"] { --acc: var(--accent-1); }
+</style>
+<div class="root">
+<div class="kicker" id="card-18-kicker" data-anim="fade-in" data-anim-at="0.2" data-anim-duration="0.4">Brief · el evento</div>
+<div class="grid">
+  <div class="tile" id="card-18-t1" data-anim="scale-pop" data-anim-at="0.3" data-anim-duration="0.45"><div class="tv"><span class="num" id="card-18-n100" data-anim="count-up" data-anim-at="3.5" data-anim-duration="1.2" data-anim-from="0" data-anim-to="100" data-anim-format=",d">0</span></div><div class="tl">estudiantes, mínimo</div></div>
+  <div class="tile" id="card-18-t2" data-anim="scale-pop" data-anim-at="6.9" data-anim-duration="0.45"><div class="tv"><span id="card-18-date" data-anim="blur-in" data-anim-at="8.4" data-anim-duration="0.5">1 dic</span></div><div class="tl">fecha</div></div>
+  <div class="tile wide" id="card-18-t3" data-anim="scale-pop" data-anim-at="13.5" data-anim-duration="0.45">
+    <div class="places">
+      <span class="old" id="card-18-old" data-anim="slide-in" data-anim-at="16.1" data-anim-duration="0.4" data-anim-from="left" data-anim-distance="40"><span id="card-18-olddim" data-anim="morph-to" data-anim-at="19.5" data-anim-duration="0.4" data-anim-from="{&quot;opacity&quot;: 1}" data-anim-props="{&quot;opacity&quot;: 0.4}">Edificio 5</span><span class="strike" id="card-18-strike" data-anim="morph-to" data-anim-at="19.3" data-anim-duration="0.4" data-anim-from="{&quot;scaleX&quot;: 0}" data-anim-props="{&quot;scaleX&quot;: 1}"></span></span>
+      <span class="new" id="card-18-new" data-anim="slide-in" data-anim-at="22.1" data-anim-duration="0.45" data-anim-from="right" data-anim-distance="50">Paraninfo</span>
+    </div>
+    <div class="tl">lugar</div>
+  </div>
+  <div class="tile wide" id="card-18-t4" data-anim="scale-pop" data-anim-at="25.3" data-anim-duration="0.45"><div class="tv"><span id="card-18-hour" data-anim="blur-in" data-anim-at="26.8" data-anim-duration="0.5">10:00 a.m.</span></div><div class="tl">hora</div></div>
+</div>
+<div class="insight" id="card-18-ins" data-anim="slide-in" data-anim-at="31.0" data-anim-duration="0.5" data-anim-from="bottom" data-anim-distance="40"><span class="ico" style="width:56px;height:56px;"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"><path d="M10 26v12h10l22 12V14L20 26z"/><path d="M50 24c4 4 4 12 0 16"/></svg></span><span>No saben que existe: hay que promocionarlo bastante</span></div>
+</div>
+</div>
+</div>
+<div class="card-host clip" id="host-card-19" data-card-id="card-19" data-start="381.5" data-duration="29.5" data-track-index="2" style="left:0;top:872px;width:1080px;height:1048px;">
+<div class="card" data-card-id="card-19">
+<style>
+.card[data-card-id="card-19"] .hero { display:flex; align-items:center; gap:32px; padding:28px 32px; border-radius:26px; background:var(--panel); border:2px solid var(--acc); color:var(--acc); }
+.card[data-card-id="card-19"] .ht { font:700 54px/1.05 'Inter'; color:var(--text); }
+.card[data-card-id="card-19"] .hs { font:400 30px/1.3 'Inter'; color:var(--muted); margin-top:8px; }
+.card[data-card-id="card-19"] .chans { display:flex; flex-wrap:wrap; gap:16px; }
+.card[data-card-id="card-19"] .lines { display:flex; flex-direction:column; gap:14px; }
+.card[data-card-id="card-19"] .li { display:flex; align-items:center; gap:22px; padding:20px 26px; border-radius:18px; background:var(--panel); font:700 32px/1.25 'Inter'; color:var(--text); }
+.card[data-card-id="card-19"] .li .ico { color:var(--acc); flex:none; }
+
+.card[data-card-id="card-19"] { --acc: var(--accent-2); }
+</style>
+<div class="root">
+<div class="kicker" id="card-19-kicker" data-anim="fade-in" data-anim-at="0.2" data-anim-duration="0.4">Brief · la pieza</div>
+<div class="hero" id="card-19-hero" data-anim="scale-pop" data-anim-at="0.9" data-anim-duration="0.5"><span class="ico" style="width:110px;height:110px;"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"><rect x="8" y="12" width="48" height="40" rx="5"/><circle cx="24" cy="26" r="5"/><path d="M8 46l15-14 11 10 8-7 14 13"/></svg></span><div><div class="ht">Pieza estática</div><div class="hs">Una imagen, no video</div></div></div>
+<div class="chans">
+  <span class="chip big" id="card-19-ig" data-anim="scale-pop" data-anim-at="5.2" data-anim-duration="0.45"><span class="ico" style="width:38px;height:38px;"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"><rect x="8" y="12" width="48" height="40" rx="5"/><circle cx="24" cy="26" r="5"/><path d="M8 46l15-14 11 10 8-7 14 13"/></svg></span>Instagram</span>
+  <span class="chip big" id="card-19-mail" data-anim="scale-pop" data-anim-at="6.6" data-anim-duration="0.45"><span class="ico" style="width:38px;height:38px;"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"><rect x="8" y="14" width="48" height="36" rx="5"/><path d="M8 18l24 18 24-18"/></svg></span>Correo de la universidad</span>
+</div>
+<div class="lines">
+  <div class="li" id="card-19-form" data-anim="slide-in" data-anim-at="10.8" data-anim-duration="0.45" data-anim-from="left" data-anim-distance="50"><span class="ico" style="width:46px;height:46px;"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"><rect x="12" y="6" width="40" height="52" rx="5"/><path d="M20 20h24M20 32h24M20 44h12"/></svg></span><span>Inscripción en formulario para confirmar asistencia</span></div>
+  <div class="li" id="card-19-d20" data-anim="slide-in" data-anim-at="18.1" data-anim-duration="0.45" data-anim-from="left" data-anim-distance="50"><span class="ico" style="width:46px;height:46px;"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"><rect x="8" y="12" width="48" height="44" rx="5"/><path d="M8 24h48M20 6v12M44 6v12"/></svg></span><span>Se entrega el 20 de noviembre</span></div>
+  <div class="li" id="card-19-ai" data-anim="slide-in" data-anim-at="21.7" data-anim-duration="0.45" data-anim-from="left" data-anim-distance="50"><span class="ico" style="width:46px;height:46px;"><svg viewBox="0 0 64 64" fill="currentColor"><path d="M32 4l6 20 20 8-20 8-6 20-6-20-20-8 20-8z"/></svg></span><span>Se produce con imágenes de IA</span></div>
+  <div class="li" id="card-19-logo" data-anim="slide-in" data-anim-at="24.6" data-anim-duration="0.45" data-anim-from="left" data-anim-distance="50"><span class="ico" style="width:46px;height:46px;"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"><circle cx="28" cy="28" r="16"/><path d="M40 40l14 14"/></svg></span><span>Logo: de la página de la universidad</span></div>
+</div>
+</div>
+</div>
+</div>
+<div class="card-host clip" id="host-card-20" data-card-id="card-20" data-start="411.0" data-duration="22.9" data-track-index="3" style="left:0;top:872px;width:1080px;height:1048px;">
+<div class="card" data-card-id="card-20">
+<style>
+.card[data-card-id="card-20"] .tline { position:relative; height:290px; margin-top:10px; }
+.card[data-card-id="card-20"] .rail { position:absolute; left:20px; right:20px; top:40px; height:8px; border-radius:4px; background:var(--panel-2); }
+.card[data-card-id="card-20"] .railfill { width:100%; height:100%; border-radius:4px; background:var(--acc); transform-origin:left center; }
+.card[data-card-id="card-20"] .ev { position:absolute; top:22px; width:300px; }
+.card[data-card-id="card-20"] .e1 { left:0; }
+.card[data-card-id="card-20"] .e2 { left:342px; }
+.card[data-card-id="card-20"] .e3 { left:684px; }
+.card[data-card-id="card-20"] .dot { display:block; width:44px; height:44px; border-radius:50%; background:var(--bg); border:6px solid var(--acc); }
+.card[data-card-id="card-20"] .dot.hot { background:var(--acc); }
+.card[data-card-id="card-20"] .ed { font:700 64px/1 'Inter'; letter-spacing:-0.02em; margin-top:26px; }
+.card[data-card-id="card-20"] .el { font:400 28px/1.25 'Inter'; color:var(--muted); margin-top:12px; }
+.card[data-card-id="card-20"] .kv { display:flex; flex-direction:column; gap:14px; }
+.card[data-card-id="card-20"] .k { display:flex; align-items:center; justify-content:space-between; gap:20px; padding:24px 28px; border-radius:18px; background:var(--panel); border:2px solid var(--line); }
+.card[data-card-id="card-20"] .kk { font-size:22px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); }
+.card[data-card-id="card-20"] .vv { font:700 38px/1.1 'Inter'; color:var(--acc); }
+
+.card[data-card-id="card-20"] { --acc: var(--accent-3); }
+</style>
+<div class="root">
+<div class="kicker" id="card-20-kicker" data-anim="fade-in" data-anim-at="0.2" data-anim-duration="0.4">Brief · calendario</div>
+<div class="tline">
+  <div class="rail"><div class="railfill" id="card-20-rail" data-anim="morph-to" data-anim-at="0.3" data-anim-duration="1.0" data-anim-from="{&quot;scaleX&quot;: 0}" data-anim-props="{&quot;scaleX&quot;: 1}"></div></div>
+  <div class="ev e1" id="card-20-e1" data-anim="scale-pop" data-anim-at="0.6" data-anim-duration="0.45"><span class="dot"></span><div class="ed">20 nov</div><div class="el">Entrega para aprobación</div></div>
+  <div class="ev e2" id="card-20-e2" data-anim="scale-pop" data-anim-at="19.6" data-anim-duration="0.5"><span class="dot hot"></span><div class="ed">27 nov</div><div class="el">Cierran inscripciones</div></div>
+  <div class="ev e3" id="card-20-e3" data-anim="scale-pop" data-anim-at="1.0" data-anim-duration="0.45"><span class="dot"></span><div class="ed">1 dic</div><div class="el">Evento, 10:00 a.m.</div></div>
+</div>
+<div class="kv">
+  <div class="k" id="card-20-k1" data-anim="slide-in" data-anim-at="2.9" data-anim-duration="0.45" data-anim-from="left" data-anim-distance="50"><span class="kk mono">Aprueba</span><span class="vv">Rectoría</span></div>
+  <div class="k" id="card-20-k2" data-anim="slide-in" data-anim-at="5.6" data-anim-duration="0.45" data-anim-from="left" data-anim-distance="50"><span class="kk mono">Enlace del formulario</span><span class="vv">Va en el copy</span></div>
+  <div class="k" id="card-20-k3" data-anim="slide-in" data-anim-at="14.8" data-anim-duration="0.45" data-anim-from="left" data-anim-distance="50"><span class="kk mono">Actividades</span><span class="vv">Sorpresa</span></div>
+</div>
+</div>
+</div>
+</div>
+<div class="card-host clip" id="host-card-21" data-card-id="card-21" data-start="433.9" data-duration="10.3" data-track-index="2" style="left:0;top:872px;width:1080px;height:1048px;">
+<div class="card" data-card-id="card-21">
+<style>
+.card[data-card-id="card-21"] .ask { font:700 42px/1.3 'Inter'; align-self:flex-end; border-color:var(--acc); }
+.card[data-card-id="card-21"] .pdf { display:flex; align-items:center; gap:44px; margin-top:20px; }
+.card[data-card-id="card-21"] .page { width:300px; height:390px; flex:none; border-radius:16px; background:#F3EEE6; padding:30px; display:flex; flex-direction:column; gap:20px; }
+.card[data-card-id="card-21"] .pt { align-self:flex-start; padding:8px 14px; border-radius:8px; background:var(--accent-0); color:#141312; font-size:24px; font-weight:700; }
+.card[data-card-id="card-21"] .pl { height:16px; border-radius:8px; background:#d9d2c6; }
+.card[data-card-id="card-21"] .ready { font:700 64px/1.05 'Inter'; letter-spacing:-0.02em; }
+.card[data-card-id="card-21"] .dl { display:inline-flex; align-items:center; gap:16px; margin-top:26px; padding:18px 28px; border-radius:16px; background:var(--acc); color:#141312; font:700 32px/1 'Inter'; }
+
+.card[data-card-id="card-21"] { --acc: var(--accent-0); }
+</style>
+<div class="root">
+<div class="kicker" id="card-21-kicker" data-anim="fade-in" data-anim-at="0.1" data-anim-duration="0.4">Resultado</div>
+<div class="ask input"><span class="tw" id="card-21-ask" data-anim="typewriter" data-anim-at="0.1" data-anim-duration="2.4"><span class="w"><span class="char">D</span><span class="char">a</span><span class="char">m</span><span class="char">e</span></span> <span class="w"><span class="char">e</span><span class="char">l</span></span> <span class="w"><span class="char">b</span><span class="char">r</span><span class="char">i</span><span class="char">e</span><span class="char">f</span></span> <span class="w"><span class="char">c</span><span class="char">o</span><span class="char">m</span><span class="char">o</span></span> <span class="w"><span class="char">u</span><span class="char">n</span></span> <span class="w"><span class="char">P</span><span class="char">D</span><span class="char">F</span></span></span></div>
+<div class="pdf" id="card-21-pdf" data-anim="scale-pop" data-anim-at="3.8" data-anim-duration="0.6">
+  <div class="page"><div class="pt mono">PDF</div><div class="pl"></div><div class="pl" style="width:70%"></div><div class="pl"></div><div class="pl" style="width:55%"></div></div>
+  <div><div class="ready">Brief listo</div><div class="dl" id="card-21-dl" data-anim="slide-in" data-anim-at="7.3" data-anim-duration="0.45" data-anim-from="top" data-anim-distance="40"><span class="ico" style="width:52px;height:52px;"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M32 8v32M20 28l12 12 12-12"/><path d="M10 40v12a4 4 0 0 0 4 4h36a4 4 0 0 0 4-4V40"/></svg></span><span>Descargar</span></div></div>
+</div>
+</div>
+</div>
+</div>
+<div class="card-host clip" id="host-card-22" data-card-id="card-22" data-start="444.2" data-duration="26.9" data-track-index="3" style="left:0;top:872px;width:1080px;height:1048px;">
+<div class="card" data-card-id="card-22">
+<style>
+.card[data-card-id="card-22"] .chats { display:flex; align-items:center; gap:18px; }
+.card[data-card-id="card-22"] .cw { flex:1; height:190px; padding:22px; border-radius:24px; background:var(--panel); border:2px solid var(--line); display:flex; flex-direction:column; gap:18px; }
+.card[data-card-id="card-22"] .cw.old { opacity:.55; }
+.card[data-card-id="card-22"] .cw.new { border-color:var(--acc); }
+.card[data-card-id="card-22"] .ch { font-size:24px; color:var(--muted); letter-spacing:.08em; }
+.card[data-card-id="card-22"] .mini { align-self:flex-start; padding:16px 22px; border-radius:12px; background:#F3EEE6; color:#141312; font:700 28px/1 'JetBrains Mono'; }
+.card[data-card-id="card-22"] .gap { color:var(--accent-1); width:80px; display:flex; justify-content:center; }
+.card[data-card-id="card-22"] .input.big { font:700 38px/1.35 'Inter'; min-height:220px; }
+.card[data-card-id="card-22"] .foot { display:flex; align-items:center; justify-content:space-between; gap:20px; }
+.card[data-card-id="card-22"] .send { width:90px; height:90px; flex:none; border-radius:50%; background:var(--acc); color:#141312; display:flex; align-items:center; justify-content:center; }
+.card[data-card-id="card-22"] .send svg { width:52px; height:52px; }
+
+.card[data-card-id="card-22"] { --acc: var(--accent-4); }
+</style>
+<div class="root">
+<div class="kicker" id="card-22-kicker" data-anim="fade-in" data-anim-at="0.2" data-anim-duration="0.4">La prueba</div>
+<h1 class="title sm" id="card-22-title" data-anim="kinetic-chars" data-anim-at="4.0" data-anim-duration="0.7" data-anim-stagger="0.025" data-anim-pattern="pop"><span class="w"><span class="char">E</span><span class="char">n</span></span> <span class="w"><span class="char">o</span><span class="char">t</span><span class="char">r</span><span class="char">o</span></span> <span class="w"><span class="char">c</span><span class="char">h</span><span class="char">a</span><span class="char">t</span><span class="char">,</span></span> <span class="w"><span class="char">s</span><span class="char">i</span><span class="char">n</span></span> <span class="w"><span class="char">c</span><span class="char">o</span><span class="char">n</span><span class="char">t</span><span class="char">e</span><span class="char">x</span><span class="char">t</span><span class="char">o</span></span></h1>
+<div class="chats">
+  <div class="cw old" id="card-22-c1" data-anim="fade-in" data-anim-at="0.4" data-anim-duration="0.4"><div class="ch mono">chat 1</div><div class="mini">PDF</div></div>
+  <div class="gap"><span id="card-22-unlink" data-anim="scale-pop" data-anim-at="22.2" data-anim-duration="0.5"><span class="ico" style="width:74px;height:74px;"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round"><path d="M26 20l4-4a10 10 0 0 1 14 14l-4 4"/><path d="M38 44l-4 4a10 10 0 0 1-14-14l4-4"/><path d="M12 12l6 6M46 46l6 6M30 8v6M8 30h6"/></svg></span></span></div>
+  <div class="cw new" id="card-22-c2" data-anim="scale-pop" data-anim-at="4.8" data-anim-duration="0.5"><div class="ch mono">chat 2 · nuevo</div><div class="mini" id="card-22-pdf2" data-anim="slide-in" data-anim-at="6.8" data-anim-duration="0.5" data-anim-from="left" data-anim-distance="120">PDF</div></div>
+</div>
+<div class="input big"><span class="tw" id="card-22-prompt" data-anim="typewriter" data-anim-at="10.7" data-anim-duration="4.8"><span class="w"><span class="char">P</span><span class="char">o</span><span class="char">r</span></span> <span class="w"><span class="char">f</span><span class="char">a</span><span class="char">v</span><span class="char">o</span><span class="char">r</span></span> <span class="w"><span class="char">r</span><span class="char">e</span><span class="char">a</span><span class="char">l</span><span class="char">i</span><span class="char">z</span><span class="char">a</span></span> <span class="w"><span class="char">e</span><span class="char">s</span><span class="char">t</span><span class="char">a</span></span> <span class="w"><span class="char">p</span><span class="char">i</span><span class="char">e</span><span class="char">z</span><span class="char">a</span></span> <span class="w"><span class="char">g</span><span class="char">r</span><span class="char">á</span><span class="char">f</span><span class="char">i</span><span class="char">c</span><span class="char">a</span></span> <span class="w"><span class="char">u</span><span class="char">t</span><span class="char">i</span><span class="char">l</span><span class="char">i</span><span class="char">z</span><span class="char">a</span><span class="char">n</span><span class="char">d</span><span class="char">o</span></span> <span class="w"><span class="char">e</span><span class="char">l</span></span> <span class="w"><span class="char">c</span><span class="char">o</span><span class="char">n</span><span class="char">e</span><span class="char">c</span><span class="char">t</span><span class="char">o</span><span class="char">r</span></span> <span class="w"><span class="char">d</span><span class="char">e</span></span> <span class="w"><span class="char">H</span><span class="char">i</span><span class="char">g</span><span class="char">g</span><span class="char">s</span><span class="char">f</span><span class="char">i</span><span class="char">e</span><span class="char">l</span><span class="char">d</span></span></span></div>
+<div class="foot"><span class="lead" id="card-22-noctx" data-anim="fade-in" data-anim-at="22.2" data-anim-duration="0.4">No tiene el contexto del chat anterior</span><span class="send" id="card-22-send" data-anim="scale-pop" data-anim-at="17.4" data-anim-duration="0.4"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><path d="M32 52V14M18 28l14-14 14 14"/></svg></span></div>
+</div>
+</div>
+</div>
+<div class="card-host clip" id="host-card-23" data-card-id="card-23" data-start="471.1" data-duration="10.1" data-track-index="2" style="left:0;top:872px;width:1080px;height:1048px;">
+<div class="card" data-card-id="card-23">
+<style>
+.card[data-card-id="card-23"] .flow { display:flex; align-items:center; justify-content:space-between; margin-top:60px; }
+.card[data-card-id="card-23"] .fn { display:flex; flex-direction:column; align-items:center; gap:22px; padding:36px 30px; border-radius:28px; background:var(--panel); border:2px solid var(--line); font:700 36px/1 'Inter'; min-width:260px; }
+.card[data-card-id="card-23"] .fn .mini { padding:22px 30px; border-radius:12px; background:#F3EEE6; color:#141312; font:700 34px/1 'JetBrains Mono'; }
+.card[data-card-id="card-23"] .fn.art { border-color:var(--acc); color:var(--acc); min-width:330px; }
+.card[data-card-id="card-23"] .fn.art span { color:var(--text); }
+.card[data-card-id="card-23"] .fa { display:flex; flex-direction:column; align-items:center; color:var(--muted); font-size:26px; }
+.card[data-card-id="card-23"] .via { display:flex; align-items:center; gap:20px; align-self:center; margin-top:40px; padding:24px 34px; border-radius:999px; background:var(--acc); color:#141312; font:700 34px/1 'Inter'; }
+
+.card[data-card-id="card-23"] { --acc: var(--accent-2); }
+</style>
+<div class="root">
+<div class="kicker" id="card-23-kicker" data-anim="fade-in" data-anim-at="0.1" data-anim-duration="0.4">Resultado</div>
+<div class="flow">
+  <div class="fn" id="card-23-b" data-anim="scale-pop" data-anim-at="0.2" data-anim-duration="0.45"><span class="mini">PDF</span><span>Brief</span></div>
+  <div class="fa" id="card-23-read" data-anim="mask-reveal" data-anim-at="2.3" data-anim-duration="0.5" data-anim-direction="left"><span class="ico" style="width:80px;height:80px;"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 32h42M38 18l14 14-14 14"/></svg></span><span class="mono">lee</span></div>
+  <div class="fn art" id="card-23-art" data-anim="scale-pop" data-anim-at="5.3" data-anim-duration="0.6"><span class="ico" style="width:120px;height:120px;"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"><rect x="8" y="12" width="48" height="40" rx="5"/><circle cx="24" cy="26" r="5"/><path d="M8 46l15-14 11 10 8-7 14 13"/></svg></span><span>Pieza gráfica</span></div>
+</div>
+<div class="via" id="card-23-via" data-anim="blur-in" data-anim-at="7.7" data-anim-duration="0.5"><span class="ico" style="width:44px;height:44px;"><svg viewBox="0 0 64 64" fill="currentColor"><path d="M32 4l6 20 20 8-20 8-6 20-6-20-20-8 20-8z"/></svg></span><span>Hecha con el conector de Higgsfield</span></div>
+</div>
+</div>
+</div>
+<div class="card-host clip" id="host-card-24" data-card-id="card-24" data-start="481.2" data-duration="5.2" data-track-index="3" style="left:0;top:872px;width:1080px;height:1048px;">
+<div class="card" data-card-id="card-24">
+<style>
+.card[data-card-id="card-24"] .steps { display:flex; flex-direction:column; gap:18px; margin-top:20px; }
+.card[data-card-id="card-24"] .st { display:flex; align-items:center; gap:26px; padding:28px 30px; border-radius:22px; background:var(--panel); border:2px solid var(--line); font:700 40px/1.2 'Inter'; }
+.card[data-card-id="card-24"] .sn { width:62px; height:62px; flex:none; border-radius:50%; background:var(--acc); color:#141312; font-size:30px; line-height:62px; text-align:center; }
+
+.card[data-card-id="card-24"] { --acc: var(--accent-0); }
+</style>
+<div class="root">
+<h1 class="title" id="card-24-title" data-anim="kinetic-chars" data-anim-at="0.1" data-anim-duration="0.6" data-anim-stagger="0.025" data-anim-pattern="pop"><span class="w"><span class="char">A</span><span class="char">s</span><span class="char">í</span></span> <span class="w"><span class="char">s</span><span class="char">e</span></span> <span class="w"><span class="char">c</span><span class="char">r</span><span class="char">e</span><span class="char">a</span></span> <span class="w"><span class="char">u</span><span class="char">n</span><span class="char">a</span></span> <span class="w"><span class="char">s</span><span class="char">k</span><span class="char">i</span><span class="char">l</span><span class="char">l</span></span></h1>
+<div class="steps">
+  <div class="st" id="card-24-s1" data-anim="slide-in" data-anim-at="1.0" data-anim-duration="0.4" data-anim-from="left" data-anim-distance="60"><span class="sn mono">1</span>Junta el material en un folder</div>
+  <div class="st" id="card-24-s2" data-anim="slide-in" data-anim-at="1.4" data-anim-duration="0.4" data-anim-from="left" data-anim-distance="60"><span class="sn mono">2</span><span class="mono acc">/skill-creator</span></div>
+  <div class="st" id="card-24-s3" data-anim="slide-in" data-anim-at="1.8" data-anim-duration="0.4" data-anim-from="left" data-anim-distance="60"><span class="sn mono">3</span>Guarda la skill</div>
+  <div class="st" id="card-24-s4" data-anim="slide-in" data-anim-at="2.2" data-anim-duration="0.4" data-anim-from="left" data-anim-distance="60"><span class="sn mono">4</span>Úsala en cualquier chat</div>
+</div>
+</div>
+</div>
+</div>
+      <script src="vendor/gsap.min.js"></script>
+      <script>
+        (function () {
+          window.__fmt = function (v, fmt) {
+            if (typeof fmt === "string" && /^\.[0-9]+f$/.test(fmt)) return Number(v).toFixed(Number(fmt.slice(1, -1)));
+            if (fmt === ",d") return Math.round(v).toLocaleString("es");
+            return String(Math.round(v));
+          };
+          const tl = window.gsap.timeline({ paused: true });
+          // card-01 [0.4, 11.4]
+          tl.fromTo(".card[data-card-id=\"card-01\"]",{opacity:0,y:36},{opacity:1,y:0,duration:0.45,ease:'power3.out'},0.4);
+          tl.fromTo(".card[data-card-id=\"card-01\"] #card-01-kicker",{opacity:0},{opacity:1,duration:0.4,ease:'power2.out'},0.6);
+          tl.fromTo(".card[data-card-id=\"card-01\"] #card-01-title .char",{opacity:0,y:24,scale:0.85},{opacity:1,y:0,scale:1,duration:0.7,ease:'power3.out',stagger:0.025},0.8);
+          tl.fromTo(".card[data-card-id=\"card-01\"] #card-01-eq",{opacity:0,filter:'blur(14px)'},{opacity:1,filter:'blur(0px)',duration:0.6,ease:'power2.out'},6.2);
+          tl.fromTo(".card[data-card-id=\"card-01\"] #card-01-p3",{opacity:0,y:60},{opacity:1,y:0,duration:0.5,ease:'power3.out'},8.3);
+          tl.fromTo(".card[data-card-id=\"card-01\"] #card-01-p2",{opacity:0,y:60},{opacity:1,y:0,duration:0.5,ease:'power3.out'},7.9);
+          tl.fromTo(".card[data-card-id=\"card-01\"] #card-01-p1",{opacity:0,scale:0.6},{opacity:1,scale:1,duration:0.5,ease:'back.out(1.6)'},7.1);
+          tl.fromTo(".card[data-card-id=\"card-01\"] #card-01-badge",{opacity:0,scale:0.6},{opacity:1,scale:1,duration:0.5,ease:'back.out(1.6)'},8.0);
+          tl.to(".card[data-card-id=\"card-01\"]",{opacity:0,y:-24,duration:0.35,ease:'power2.in'},11.0667);
+          // card-02 [11.4, 22.4]
+          tl.fromTo(".card[data-card-id=\"card-02\"]",{opacity:0,y:36},{opacity:1,y:0,duration:0.45,ease:'power3.out'},11.4);
+          tl.fromTo(".card[data-card-id=\"card-02\"] #card-02-kicker",{opacity:0},{opacity:1,duration:0.4,ease:'power2.out'},11.6);
+          tl.fromTo(".card[data-card-id=\"card-02\"] #card-02-src",{opacity:0,scale:0.6},{opacity:1,scale:1,duration:0.5,ease:'back.out(1.6)'},11.8);
+          tl.fromTo(".card[data-card-id=\"card-02\"] #card-02-l1",{strokeDasharray:1,strokeDashoffset:1},{strokeDashoffset:0,duration:0.6,ease:'power2.inOut'},12.0);
+          tl.fromTo(".card[data-card-id=\"card-02\"] #card-02-l2",{strokeDasharray:1,strokeDashoffset:1},{strokeDashoffset:0,duration:0.6,ease:'power2.inOut'},15.2);
+          tl.fromTo(".card[data-card-id=\"card-02\"] #card-02-t1",{opacity:0,scale:0.6},{opacity:1,scale:1,duration:0.5,ease:'back.out(1.6)'},12.5);
+          tl.fromTo(".card[data-card-id=\"card-02\"] #card-02-t2",{opacity:0,scale:0.6},{opacity:1,scale:1,duration:0.5,ease:'back.out(1.6)'},15.6);
+          tl.fromTo(".card[data-card-id=\"card-02\"] #card-02-title .char",{opacity:0,y:24,scale:0.85},{opacity:1,y:0,scale:1,duration:0.7,ease:'power3.out',stagger:0.025},16.3);
+          tl.fromTo(".card[data-card-id=\"card-02\"] #card-02-o1",{opacity:0,x:-60},{opacity:1,x:0,duration:0.45,ease:'power3.out'},17.2);
+          tl.fromTo(".card[data-card-id=\"card-02\"] #card-02-o2",{opacity:0,x:-60},{opacity:1,x:0,duration:0.45,ease:'power3.out'},17.6);
+          tl.fromTo(".card[data-card-id=\"card-02\"] #card-02-o3",{opacity:0,x:-60},{opacity:1,x:0,duration:0.45,ease:'power3.out'},18.0);
+          tl.to(".card[data-card-id=\"card-02\"]",{opacity:0,y:-24,duration:0.35,ease:'power2.in'},22.0333);
+          // card-03 [22.4, 42.1]
+          tl.fromTo(".card[data-card-id=\"card-03\"]",{opacity:0,y:36},{opacity:1,y:0,duration:0.45,ease:'power3.out'},22.4);
+          tl.fromTo(".card[data-card-id=\"card-03\"] #card-03-kicker",{opacity:0},{opacity:1,duration:0.4,ease:'power2.out'},22.6);
+          tl.fromTo(".card[data-card-id=\"card-03\"] #card-03-folder",{opacity:0,scale:0.6},{opacity:1,scale:1,duration:0.6,ease:'back.out(1.6)'},23.6);
+          tl.fromTo(".card[data-card-id=\"card-03\"] #card-03-title .char",{opacity:0,y:24,scale:0.85},{opacity:1,y:0,scale:1,duration:0.8,ease:'power3.out',stagger:0.025},27.2);
+          tl.fromTo(".card[data-card-id=\"card-03\"] #card-03-who",{opacity:0},{opacity:1,duration:0.4,ease:'power2.out'},34.7);
+          tl.fromTo(".card[data-card-id=\"card-03\"] #card-03-c1",{opacity:0,scale:0.6},{opacity:1,scale:1,duration:0.45,ease:'back.out(1.6)'},36.0);
+          tl.fromTo(".card[data-card-id=\"card-03\"] #card-03-c2",{opacity:0,scale:0.6},{opacity:1,scale:1,duration:0.45,ease:'back.out(1.6)'},37.5);
+          tl.fromTo(".card[data-card-id=\"card-03\"] #card-03-c3",{opacity:0,scale:0.6},{opacity:1,scale:1,duration:0.45,ease:'back.out(1.6)'},40.1);
+          tl.to(".card[data-card-id=\"card-03\"]",{opacity:0,y:-24,duration:0.35,ease:'power2.in'},41.7333);
+          // card-04 [42.1, 59.3]
+          tl.fromTo(".card[data-card-id=\"card-04\"]",{opacity:0,y:36},{opacity:1,y:0,duration:0.45,ease:'power3.out'},42.1);
+          tl.fromTo(".card[data-card-id=\"card-04\"] #card-04-kicker",{opacity:0},{opacity:1,duration:0.4,ease:'power2.out'},42.2);
+          tl.fromTo(".card[data-card-id=\"card-04\"] #card-04-r1",{opacity:0,x:-70},{opacity:1,x:0,duration:0.45,ease:'power3.out'},42.2);
+          tl.fromTo(".card[data-card-id=\"card-04\"] #card-04-r2-sub",{opacity:0},{opacity:1,duration:0.4,ease:'power2.out'},46.8);
+          tl.fromTo(".card[data-card-id=\"card-04\"] #card-04-r2",{opacity:0,x:-70},{opacity:1,x:0,duration:0.45,ease:'power3.out'},44.4);
+          tl.fromTo(".card[data-card-id=\"card-04\"] #card-04-r3",{opacity:0,x:-70},{opacity:1,x:0,duration:0.45,ease:'power3.out'},51.0);
+          tl.fromTo(".card[data-card-id=\"card-04\"] #card-04-r4",{opacity:0,x:-70},{opacity:1,x:0,duration:0.45,ease:'power3.out'},52.4);
+          tl.fromTo(".card[data-card-id=\"card-04\"] #card-04-r5",{opacity:0,x:-70},{opacity:1,x:0,duration:0.45,ease:'power3.out'},53.5);
+          tl.fromTo(".card[data-card-id=\"card-04\"] #card-04-note",{opacity:0,filter:'blur(14px)'},{opacity:1,filter:'blur(0px)',duration:0.6,ease:'power2.out'},54.6);
+          tl.to(".card[data-card-id=\"card-04\"]",{opacity:0,y:-24,duration:0.35,ease:'power2.in'},58.9333);
+          // card-05 [59.3, 88.5]
+          tl.fromTo(".card[data-card-id=\"card-05\"]",{opacity:0,y:36},{opacity:1,y:0,duration:0.45,ease:'power3.out'},59.3);
+          tl.fromTo(".card[data-card-id=\"card-05\"] #card-05-kicker",{opacity:0},{opacity:1,duration:0.4,ease:'power2.out'},59.4);
+          tl.fromTo(".card[data-card-id=\"card-05\"] #card-05-badge",{opacity:0,scale:0.6},{opacity:1,scale:1,duration:0.5,ease:'back.out(1.6)'},60.4);
+          tl.fromTo(".card[data-card-id=\"card-05\"] #card-05-t0",{opacity:0,scale:0.6},{opacity:1,scale:1,duration:0.35,ease:'back.out(1.6)'},66.5);
+          tl.fromTo(".card[data-card-id=\"card-05\"] #card-05-t1",{opacity:0,scale:0.6},{opacity:1,scale:1,duration:0.35,ease:'back.out(1.6)'},68.1);
+          tl.fromTo(".card[data-card-id=\"card-05\"] #card-05-t2",{opacity:0,scale:0.6},{opacity:1,scale:1,duration:0.35,ease:'back.out(1.6)'},70.7);
+          tl.fromTo(".card[data-card-id=\"card-05\"] #card-05-r6",{opacity:0,x:-70},{opacity:1,x:0,duration:0.45,ease:'power3.out'},64.0);
+          tl.fromTo(".card[data-card-id=\"card-05\"] #card-05-r7-sub",{opacity:0},{opacity:1,duration:0.4,ease:'power2.out'},77.7);
+          tl.fromTo(".card[data-card-id=\"card-05\"] #card-05-r7",{opacity:0,x:-70},{opacity:1,x:0,duration:0.45,ease:'power3.out'},74.3);
+          tl.fromTo(".card[data-card-id=\"card-05\"] #card-05-r8-sub",{opacity:0},{opacity:1,duration:0.4,ease:'power2.out'},86.9);
+          tl.fromTo(".card[data-card-id=\"card-05\"] #card-05-r8",{opacity:0,x:-70},{opacity:1,x:0,duration:0.45,ease:'power3.out'},82.4);
+          tl.to(".card[data-card-id=\"card-05\"]",{opacity:0,y:-24,duration:0.35,ease:'power2.in'},88.1333);
+          // card-06 [88.5, 108.1]
+          tl.fromTo(".card[data-card-id=\"card-06\"]",{opacity:0,y:36},{opacity:1,y:0,duration:0.45,ease:'power3.out'},88.5);
+          tl.fromTo(".card[data-card-id=\"card-06\"] #card-06-kicker",{opacity:0},{opacity:1,duration:0.4,ease:'power2.out'},88.6);
+          tl.fromTo(".card[data-card-id=\"card-06\"] #card-06-title .char",{opacity:0,y:24,scale:0.85},{opacity:1,y:0,scale:1,duration:0.7,ease:'power3.out',stagger:0.025},89.4);
+          tl.fromTo(".card[data-card-id=\"card-06\"] #card-06-why",{opacity:0,scale:0.6},{opacity:1,scale:1,duration:0.45,ease:'back.out(1.6)'},94.9);
+          tl.fromTo(".card[data-card-id=\"card-06\"] #card-06-reg",{opacity:0,x:80},{opacity:1,x:0,duration:0.55,ease:'power3.out'},98.9);
+          tl.fromTo(".card[data-card-id=\"card-06\"] #card-06-uni",{opacity:0},{opacity:1,duration:0.4,ease:'power2.out'},106.4);
+          tl.fromTo(".card[data-card-id=\"card-06\"] #card-06-chk",{strokeDasharray:1,strokeDashoffset:1},{strokeDashoffset:0,duration:0.5,ease:'power2.inOut'},101.6);
+          tl.fromTo(".card[data-card-id=\"card-06\"] #card-06-follow",{opacity:0},{opacity:1,duration:0.4,ease:'power2.out'},101.4);
+          tl.to(".card[data-card-id=\"card-06\"]",{opacity:0,y:-24,duration:0.35,ease:'power2.in'},107.7333);
+          // card-07 [108.1, 119.0]
+          tl.fromTo(".card[data-card-id=\"card-07\"]",{opacity:0,y:36},{opacity:1,y:0,duration:0.45,ease:'power3.out'},108.1);
+          tl.fromTo(".card[data-card-id=\"card-07\"] #card-07-kicker",{opacity:0},{opacity:1,duration:0.4,ease:'power2.out'},108.3);
+          tl.fromTo(".card[data-card-id=\"card-07\"] #card-07-title .char",{opacity:0,y:24,scale:0.85},{opacity:1,y:0,scale:1,duration:0.6,ease:'power3.out',stagger:0.025},108.4);
+          tl.fromTo(".card[data-card-id=\"card-07\"] #card-07-att",{opacity:0,y:-90},{opacity:1,y:0,duration:0.5,ease:'power3.out'},109.1);
+          tl.fromTo(".card[data-card-id=\"card-07\"] #card-07-fill",{"scaleX": 0},{...{"scaleX": 1},duration:1.4,ease:'power2.out'},109.6);
+          tl.fromTo(".card[data-card-id=\"card-07\"] #card-07-ok",{opacity:0,scale:0.6},{opacity:1,scale:1,duration:0.4,ease:'back.out(1.6)'},111.1);
+          tl.fromTo(".card[data-card-id=\"card-07\"] #card-07-cmd .char",{opacity:0},{opacity:1,duration:0.01,ease:'none',stagger:0.1071},116.1);
+          tl.to(".card[data-card-id=\"card-07\"]",{opacity:0,y:-24,duration:0.35,ease:'power2.in'},118.6667);
+          // card-08 [119.0, 131.5]
+          tl.fromTo(".card[data-card-id=\"card-08\"]",{opacity:0,y:36},{opacity:1,y:0,duration:0.45,ease:'power3.out'},119.0);
+          tl.fromTo(".card[data-card-id=\"card-08\"] #card-08-kicker",{opacity:0},{opacity:1,duration:0.4,ease:'power2.out'},119.2);
+          tl.fromTo(".card[data-card-id=\"card-08\"] #card-08-cmd",{opacity:0,scale:0.6},{opacity:1,scale:1,duration:0.55,ease:'back.out(1.6)'},119.4);
+          tl.fromTo(".card[data-card-id=\"card-08\"] #card-08-tag1",{opacity:0},{opacity:1,duration:0.4,ease:'power2.out'},123.7);
+          tl.fromTo(".card[data-card-id=\"card-08\"] #card-08-tag2",{opacity:0,scale:0.6},{opacity:1,scale:1,duration:0.45,ease:'back.out(1.6)'},127.0);
+          tl.fromTo(".card[data-card-id=\"card-08\"] #card-08-b1",{opacity:0,scale:0.6},{opacity:1,scale:1,duration:0.45,ease:'back.out(1.6)'},129.3);
+          tl.fromTo(".card[data-card-id=\"card-08\"] #card-08-arr",{clipPath:'inset(0 100% 0 0)'},{clipPath:'inset(0% 0% 0% 0%)',duration:0.4,ease:'power2.inOut'},129.8);
+          tl.fromTo(".card[data-card-id=\"card-08\"] #card-08-b2",{opacity:0,scale:0.6},{opacity:1,scale:1,duration:0.45,ease:'back.out(1.6)'},130.4);
+          tl.fromTo(".card[data-card-id=\"card-08\"] #card-08-title .char",{opacity:0,y:24,scale:0.85},{opacity:1,y:0,scale:1,duration:0.6,ease:'power3.out',stagger:0.025},129.0);
+          tl.to(".card[data-card-id=\"card-08\"]",{opacity:0,y:-24,duration:0.35,ease:'power2.in'},131.1333);
+          // card-09 [131.5, 145.7]
+          tl.fromTo(".card[data-card-id=\"card-09\"]",{opacity:0,y:36},{opacity:1,y:0,duration:0.45,ease:'power3.out'},131.5);
+          tl.fromTo(".card[data-card-id=\"card-09\"] #card-09-kicker",{opacity:0},{opacity:1,duration:0.4,ease:'power2.out'},131.7);
+          tl.fromTo(".card[data-card-id=\"card-09\"] #card-09-title .char",{opacity:0,y:24,scale:0.85},{opacity:1,y:0,scale:1,duration:0.5,ease:'power3.out',stagger:0.025},131.8);
+          tl.fromTo(".card[data-card-id=\"card-09\"] #card-09-prompt .char",{opacity:0},{opacity:1,duration:0.01,ease:'none',stagger:0.26},133.3);
+          tl.fromTo(".card[data-card-id=\"card-09\"] #card-09-send",{opacity:0,scale:0.6},{opacity:1,scale:1,duration:0.4,ease:'back.out(1.6)'},144.0);
+          tl.to(".card[data-card-id=\"card-09\"]",{opacity:0,y:-24,duration:0.35,ease:'power2.in'},145.3333);
+          // card-10 [145.7, 176.1]
+          tl.fromTo(".card[data-card-id=\"card-10\"]",{opacity:0,y:36},{opacity:1,y:0,duration:0.45,ease:'power3.out'},145.7);
+          tl.fromTo(".card[data-card-id=\"card-10\"] #card-10-kicker",{opacity:0},{opacity:1,duration:0.4,ease:'power2.out'},145.9);
+          tl.fromTo(".card[data-card-id=\"card-10\"] #card-10-title .char",{opacity:0,y:24,scale:0.85},{opacity:1,y:0,scale:1,duration:0.6,ease:'power3.out',stagger:0.025},146.0);
+          tl.fromTo(".card[data-card-id=\"card-10\"] #card-10-n1",{opacity:0,x:-60},{opacity:1,x:0,duration:0.5,ease:'power3.out'},146.9);
+          tl.fromTo(".card[data-card-id=\"card-10\"] #card-10-plus",{opacity:0},{opacity:1,duration:0.3,ease:'power2.out'},154.4);
+          tl.fromTo(".card[data-card-id=\"card-10\"] #card-10-n2",{opacity:0,scale:0.6},{opacity:1,scale:1,duration:0.5,ease:'back.out(1.6)'},154.6);
+          tl.fromTo(".card[data-card-id=\"card-10\"] #card-10-down",{clipPath:'inset(0 0 100% 0)'},{clipPath:'inset(0% 0% 0% 0%)',duration:0.5,ease:'power2.inOut'},156.2);
+          tl.fromTo(".card[data-card-id=\"card-10\"] #card-10-l1",{opacity:0,y:40},{opacity:1,y:0,duration:0.45,ease:'power3.out'},160.0);
+          tl.fromTo(".card[data-card-id=\"card-10\"] #card-10-l2",{opacity:0,y:40},{opacity:1,y:0,duration:0.45,ease:'power3.out'},163.4);
+          tl.fromTo(".card[data-card-id=\"card-10\"] #card-10-l3",{opacity:0,y:40},{opacity:1,y:0,duration:0.45,ease:'power3.out'},167.4);
+          tl.fromTo(".card[data-card-id=\"card-10\"] #card-10-agent",{opacity:0,scale:0.6},{opacity:1,scale:1,duration:0.5,ease:'back.out(1.6)'},172.4);
+          tl.to(".card[data-card-id=\"card-10\"]",{opacity:0,y:-24,duration:0.35,ease:'power2.in'},175.7333);
+          // card-11 [176.1, 207.7]
+          tl.fromTo(".card[data-card-id=\"card-11\"]",{opacity:0,y:36},{opacity:1,y:0,duration:0.45,ease:'power3.out'},176.1);
+          tl.fromTo(".card[data-card-id=\"card-11\"] #card-11-kicker",{opacity:0},{opacity:1,duration:0.4,ease:'power2.out'},176.2);
+          tl.fromTo(".card[data-card-id=\"card-11\"] #card-11-title .char",{opacity:0,y:24,scale:0.85},{opacity:1,y:0,scale:1,duration:0.7,ease:'power3.out',stagger:0.025},176.3);
+          tl.fromTo(".card[data-card-id=\"card-11\"] #card-11-o1",{opacity:0,x:-70},{opacity:1,x:0,duration:0.5,ease:'power3.out'},177.9);
+          tl.fromTo(".card[data-card-id=\"card-11\"] #card-11-o1c",{opacity:0},{opacity:1,duration:0.5,ease:'power2.out'},182.8);
+          tl.fromTo(".card[data-card-id=\"card-11\"] #card-11-o2",{opacity:0,x:-70},{opacity:1,x:0,duration:0.5,ease:'power3.out'},187.0);
+          tl.fromTo(".card[data-card-id=\"card-11\"] #card-11-o2s",{opacity:0},{opacity:1,duration:0.4,ease:'power2.out'},189.0);
+          tl.fromTo(".card[data-card-id=\"card-11\"] #card-11-bubble",{opacity:0,scale:0.6},{opacity:1,scale:1,duration:0.5,ease:'back.out(1.6)'},198.3);
+          tl.fromTo(".card[data-card-id=\"card-11\"] #card-11-nopide",{opacity:0,filter:'blur(14px)'},{opacity:1,filter:'blur(0px)',duration:0.5,ease:'power2.out'},202.2);
+          tl.to(".card[data-card-id=\"card-11\"]",{opacity:0,y:-24,duration:0.35,ease:'power2.in'},207.3333);
+          // card-12 [207.7, 221.9]
+          tl.fromTo(".card[data-card-id=\"card-12\"]",{opacity:0,y:36},{opacity:1,y:0,duration:0.45,ease:'power3.out'},207.7);
+          tl.fromTo(".card[data-card-id=\"card-12\"] #card-12-chk",{strokeDasharray:1,strokeDashoffset:1},{strokeDashoffset:0,duration:0.6,ease:'power2.inOut'},207.9);
+          tl.fromTo(".card[data-card-id=\"card-12\"] #card-12-title .char",{opacity:0,y:24,scale:0.85},{opacity:1,y:0,scale:1,duration:0.6,ease:'power3.out',stagger:0.025},208.4);
+          tl.fromTo(".card[data-card-id=\"card-12\"] #card-12-two",{opacity:0},{opacity:1,duration:0.4,ease:'power2.out'},211.4);
+          tl.fromTo(".card[data-card-id=\"card-12\"] #card-12-o1",{opacity:0,x:-70},{opacity:1,x:0,duration:0.5,ease:'power3.out'},215.3);
+          tl.fromTo(".card[data-card-id=\"card-12\"] #card-12-ripple",{"scale": 0.2, "opacity": 0.8},{...{"scale": 2.2, "opacity": 0},duration:0.7,ease:'power2.out'},217.4);
+          tl.fromTo(".card[data-card-id=\"card-12\"] #card-12-tease",{opacity:0},{opacity:1,duration:0.5,ease:'power2.out'},218.8);
+          tl.to(".card[data-card-id=\"card-12\"]",{opacity:0,y:-24,duration:0.35,ease:'power2.in'},221.5333);
+          // card-13 [221.9, 234.4]
+          tl.fromTo(".card[data-card-id=\"card-13\"]",{opacity:0,y:36},{opacity:1,y:0,duration:0.45,ease:'power3.out'},221.9);
+          tl.fromTo(".card[data-card-id=\"card-13\"] #card-13-kicker",{opacity:0},{opacity:1,duration:0.4,ease:'power2.out'},222.0);
+          tl.fromTo(".card[data-card-id=\"card-13\"] #card-13-title .char",{opacity:0,y:24,scale:0.85},{opacity:1,y:0,scale:1,duration:0.7,ease:'power3.out',stagger:0.025},222.1);
+          tl.fromTo(".card[data-card-id=\"card-13\"] #card-13-p1",{opacity:0,scale:0.6},{opacity:1,scale:1,duration:0.45,ease:'back.out(1.6)'},229.2);
+          tl.fromTo(".card[data-card-id=\"card-13\"] #card-13-s1",{opacity:0},{opacity:1,duration:0.3,ease:'power2.out'},230.3);
+          tl.fromTo(".card[data-card-id=\"card-13\"] #card-13-p2",{opacity:0,scale:0.6},{opacity:1,scale:1,duration:0.45,ease:'back.out(1.6)'},230.6);
+          tl.fromTo(".card[data-card-id=\"card-13\"] #card-13-s2",{opacity:0},{opacity:1,duration:0.3,ease:'power2.out'},231.8);
+          tl.fromTo(".card[data-card-id=\"card-13\"] #card-13-p3",{opacity:0,scale:0.6},{opacity:1,scale:1,duration:0.45,ease:'back.out(1.6)'},232.1);
+          tl.to(".card[data-card-id=\"card-13\"]",{opacity:0,y:-24,duration:0.35,ease:'power2.in'},234.0667);
+          // card-14 [234.4, 251.0]
+          tl.fromTo(".card[data-card-id=\"card-14\"]",{opacity:0,y:36},{opacity:1,y:0,duration:0.45,ease:'power3.out'},234.4);
+          tl.fromTo(".card[data-card-id=\"card-14\"] #card-14-kicker",{opacity:0},{opacity:1,duration:0.4,ease:'power2.out'},234.6);
+          tl.fromTo(".card[data-card-id=\"card-14\"] #card-14-post",{opacity:0,scale:0.6},{opacity:1,scale:1,duration:0.5,ease:'back.out(1.6)'},234.8);
+          tl.fromTo(".card[data-card-id=\"card-14\"] #card-14-lead",{opacity:0},{opacity:1,duration:0.4,ease:'power2.out'},240.2);
+          tl.fromTo(".card[data-card-id=\"card-14\"] #card-14-f1",{opacity:0,scale:0.6},{opacity:1,scale:1,duration:0.45,ease:'back.out(1.6)'},243.6);
+          tl.fromTo(".card[data-card-id=\"card-14\"] #card-14-f2",{opacity:0,scale:0.6},{opacity:1,scale:1,duration:0.45,ease:'back.out(1.6)'},244.8);
+          tl.fromTo(".card[data-card-id=\"card-14\"] #card-14-f3",{opacity:0,scale:0.6},{opacity:1,scale:1,duration:0.45,ease:'back.out(1.6)'},246.0);
+          tl.fromTo(".card[data-card-id=\"card-14\"] #card-14-chk",{strokeDasharray:1,strokeDashoffset:1},{strokeDashoffset:0,duration:0.5,ease:'power2.inOut'},247.8);
+          tl.fromTo(".card[data-card-id=\"card-14\"] #card-14-w",{opacity:0},{opacity:1,duration:0.4,ease:'power2.out'},247.7);
+          tl.to(".card[data-card-id=\"card-14\"]",{opacity:0,y:-24,duration:0.35,ease:'power2.in'},250.6667);
+          // card-15 [251.0, 274.3]
+          tl.fromTo(".card[data-card-id=\"card-15\"]",{opacity:0,y:36},{opacity:1,y:0,duration:0.45,ease:'power3.out'},251.0);
+          tl.fromTo(".card[data-card-id=\"card-15\"] #card-15-kicker",{opacity:0},{opacity:1,duration:0.4,ease:'power2.out'},251.2);
+          tl.fromTo(".card[data-card-id=\"card-15\"] #card-15-title .char",{opacity:0,y:24,scale:0.85},{opacity:1,y:0,scale:1,duration:0.6,ease:'power3.out',stagger:0.025},251.3);
+          tl.fromTo(".card[data-card-id=\"card-15\"] #card-15-back",{opacity:0},{opacity:1,duration:0.4,ease:'power2.out'},253.0);
+          tl.fromTo(".card[data-card-id=\"card-15\"] #card-15-pop",{opacity:0,y:50},{opacity:1,y:0,duration:0.5,ease:'power3.out'},262.2);
+          tl.fromTo(".card[data-card-id=\"card-15\"] #card-15-hl",{"opacity": 0.35},{...{"opacity": 1},duration:0.4,ease:'power2.out'},265.6);
+          tl.fromTo(".card[data-card-id=\"card-15\"] #card-15-launch",{opacity:0,scale:0.6},{opacity:1,scale:1,duration:0.5,ease:'back.out(1.6)'},268.6);
+          tl.to(".card[data-card-id=\"card-15\"]",{opacity:0,y:-24,duration:0.35,ease:'power2.in'},273.9333);
+          // card-16 [274.3, 292.4]
+          tl.fromTo(".card[data-card-id=\"card-16\"]",{opacity:0,y:36},{opacity:1,y:0,duration:0.45,ease:'power3.out'},274.3);
+          tl.fromTo(".card[data-card-id=\"card-16\"] #card-16-kicker",{opacity:0},{opacity:1,duration:0.4,ease:'power2.out'},274.5);
+          tl.fromTo(".card[data-card-id=\"card-16\"] #card-16-w0",{opacity:0,filter:'blur(14px)'},{opacity:1,filter:'blur(0px)',duration:0.5,ease:'power2.out'},274.4);
+          tl.fromTo(".card[data-card-id=\"card-16\"] #card-16-w1",{opacity:0,filter:'blur(14px)'},{opacity:1,filter:'blur(0px)',duration:0.5,ease:'power2.out'},275.9);
+          tl.fromTo(".card[data-card-id=\"card-16\"] #card-16-w2",{opacity:0,filter:'blur(14px)'},{opacity:1,filter:'blur(0px)',duration:0.5,ease:'power2.out'},277.3);
+          tl.fromTo(".card[data-card-id=\"card-16\"] #card-16-w3",{opacity:0,filter:'blur(14px)'},{opacity:1,filter:'blur(0px)',duration:0.5,ease:'power2.out'},278.8);
+          tl.fromTo(".card[data-card-id=\"card-16\"] #card-16-w4",{opacity:0,filter:'blur(14px)'},{opacity:1,filter:'blur(0px)',duration:0.5,ease:'power2.out'},280.2);
+          tl.fromTo(".card[data-card-id=\"card-16\"] #card-16-w5",{opacity:0,filter:'blur(14px)'},{opacity:1,filter:'blur(0px)',duration:0.5,ease:'power2.out'},281.7);
+          tl.fromTo(".card[data-card-id=\"card-16\"] #card-16-w6",{opacity:0,filter:'blur(14px)'},{opacity:1,filter:'blur(0px)',duration:0.5,ease:'power2.out'},283.1);
+          tl.fromTo(".card[data-card-id=\"card-16\"] #card-16-w7",{opacity:0,filter:'blur(14px)'},{opacity:1,filter:'blur(0px)',duration:0.5,ease:'power2.out'},284.6);
+          tl.fromTo(".card[data-card-id=\"card-16\"] #card-16-w8",{opacity:0,filter:'blur(14px)'},{opacity:1,filter:'blur(0px)',duration:0.5,ease:'power2.out'},286.0);
+          tl.fromTo(".card[data-card-id=\"card-16\"] #card-16-w9",{opacity:0,filter:'blur(14px)'},{opacity:1,filter:'blur(0px)',duration:0.5,ease:'power2.out'},287.1);
+          tl.to(".card[data-card-id=\"card-16\"]",{opacity:0,y:-24,duration:0.35,ease:'power2.in'},292.0333);
+          // card-17 [292.4, 339.1]
+          tl.fromTo(".card[data-card-id=\"card-17\"]",{opacity:0,y:36},{opacity:1,y:0,duration:0.45,ease:'power3.out'},292.4);
+          tl.fromTo(".card[data-card-id=\"card-17\"] #card-17-doc",{opacity:0,y:60},{opacity:1,y:0,duration:0.5,ease:'power3.out'},292.5);
+          tl.fromTo(".card[data-card-id=\"card-17\"] #card-17-f1-l",{opacity:0},{opacity:1,duration:0.3,ease:'power2.out'},293.2);
+          tl.fromTo(".card[data-card-id=\"card-17\"] #card-17-f1",{opacity:0,x:-50},{opacity:1,x:0,duration:0.45,ease:'power3.out'},293.4);
+          tl.fromTo(".card[data-card-id=\"card-17\"] #card-17-f2-l",{opacity:0},{opacity:1,duration:0.3,ease:'power2.out'},302.5);
+          tl.fromTo(".card[data-card-id=\"card-17\"] #card-17-f2",{opacity:0,x:-50},{opacity:1,x:0,duration:0.45,ease:'power3.out'},302.7);
+          tl.fromTo(".card[data-card-id=\"card-17\"] #card-17-f3-l",{opacity:0},{opacity:1,duration:0.3,ease:'power2.out'},310.9);
+          tl.fromTo(".card[data-card-id=\"card-17\"] #card-17-f3",{opacity:0,x:-50},{opacity:1,x:0,duration:0.45,ease:'power3.out'},311.1);
+          tl.fromTo(".card[data-card-id=\"card-17\"] #card-17-f4-l",{opacity:0},{opacity:1,duration:0.3,ease:'power2.out'},315.5);
+          tl.fromTo(".card[data-card-id=\"card-17\"] #card-17-f4",{opacity:0,x:-50},{opacity:1,x:0,duration:0.45,ease:'power3.out'},315.7);
+          tl.fromTo(".card[data-card-id=\"card-17\"] #card-17-f5-l",{opacity:0},{opacity:1,duration:0.3,ease:'power2.out'},318.5);
+          tl.fromTo(".card[data-card-id=\"card-17\"] #card-17-f5",{opacity:0,x:-50},{opacity:1,x:0,duration:0.45,ease:'power3.out'},318.7);
+          tl.fromTo(".card[data-card-id=\"card-17\"] #card-17-f6-l",{opacity:0},{opacity:1,duration:0.3,ease:'power2.out'},326.0);
+          tl.fromTo(".card[data-card-id=\"card-17\"] #card-17-f6",{opacity:0,x:-50},{opacity:1,x:0,duration:0.45,ease:'power3.out'},326.2);
+          tl.fromTo(".card[data-card-id=\"card-17\"] #card-17-f7-l",{opacity:0},{opacity:1,duration:0.3,ease:'power2.out'},335.7);
+          tl.fromTo(".card[data-card-id=\"card-17\"] #card-17-f7",{opacity:0,x:-50},{opacity:1,x:0,duration:0.45,ease:'power3.out'},335.9);
+          tl.to(".card[data-card-id=\"card-17\"]",{opacity:0,y:-24,duration:0.35,ease:'power2.in'},338.7333);
+          // card-18 [339.1, 381.5]
+          tl.fromTo(".card[data-card-id=\"card-18\"]",{opacity:0,y:36},{opacity:1,y:0,duration:0.45,ease:'power3.out'},339.1);
+          tl.fromTo(".card[data-card-id=\"card-18\"] #card-18-kicker",{opacity:0},{opacity:1,duration:0.4,ease:'power2.out'},339.3);
+          tl.fromTo(".card[data-card-id=\"card-18\"] #card-18-t1",{opacity:0,scale:0.6},{opacity:1,scale:1,duration:0.45,ease:'back.out(1.6)'},339.4);
+          (function(){const o={v:0};tl.to(o,{v:100,duration:1.2,ease:'power2.out',onUpdate:function(){const el=document.querySelector(".card[data-card-id=\"card-18\"] #card-18-n100");if(el)el.textContent=__fmt(o.v,",d");}},342.6);})();
+          tl.fromTo(".card[data-card-id=\"card-18\"] #card-18-t2",{opacity:0,scale:0.6},{opacity:1,scale:1,duration:0.45,ease:'back.out(1.6)'},346.0);
+          tl.fromTo(".card[data-card-id=\"card-18\"] #card-18-date",{opacity:0,filter:'blur(14px)'},{opacity:1,filter:'blur(0px)',duration:0.5,ease:'power2.out'},347.5);
+          tl.fromTo(".card[data-card-id=\"card-18\"] #card-18-t3",{opacity:0,scale:0.6},{opacity:1,scale:1,duration:0.45,ease:'back.out(1.6)'},352.6);
+          tl.fromTo(".card[data-card-id=\"card-18\"] #card-18-old",{opacity:0,x:-40},{opacity:1,x:0,duration:0.4,ease:'power3.out'},355.2);
+          tl.fromTo(".card[data-card-id=\"card-18\"] #card-18-olddim",{"opacity": 1},{...{"opacity": 0.4},duration:0.4,ease:'power2.out'},358.6);
+          tl.fromTo(".card[data-card-id=\"card-18\"] #card-18-strike",{"scaleX": 0},{...{"scaleX": 1},duration:0.4,ease:'power2.out'},358.4);
+          tl.fromTo(".card[data-card-id=\"card-18\"] #card-18-new",{opacity:0,x:50},{opacity:1,x:0,duration:0.45,ease:'power3.out'},361.2);
+          tl.fromTo(".card[data-card-id=\"card-18\"] #card-18-t4",{opacity:0,scale:0.6},{opacity:1,scale:1,duration:0.45,ease:'back.out(1.6)'},364.4);
+          tl.fromTo(".card[data-card-id=\"card-18\"] #card-18-hour",{opacity:0,filter:'blur(14px)'},{opacity:1,filter:'blur(0px)',duration:0.5,ease:'power2.out'},365.9);
+          tl.fromTo(".card[data-card-id=\"card-18\"] #card-18-ins",{opacity:0,y:40},{opacity:1,y:0,duration:0.5,ease:'power3.out'},370.1);
+          tl.to(".card[data-card-id=\"card-18\"]",{opacity:0,y:-24,duration:0.35,ease:'power2.in'},381.1333);
+          // card-19 [381.5, 411.0]
+          tl.fromTo(".card[data-card-id=\"card-19\"]",{opacity:0,y:36},{opacity:1,y:0,duration:0.45,ease:'power3.out'},381.5);
+          tl.fromTo(".card[data-card-id=\"card-19\"] #card-19-kicker",{opacity:0},{opacity:1,duration:0.4,ease:'power2.out'},381.7);
+          tl.fromTo(".card[data-card-id=\"card-19\"] #card-19-hero",{opacity:0,scale:0.6},{opacity:1,scale:1,duration:0.5,ease:'back.out(1.6)'},382.4);
+          tl.fromTo(".card[data-card-id=\"card-19\"] #card-19-ig",{opacity:0,scale:0.6},{opacity:1,scale:1,duration:0.45,ease:'back.out(1.6)'},386.7);
+          tl.fromTo(".card[data-card-id=\"card-19\"] #card-19-mail",{opacity:0,scale:0.6},{opacity:1,scale:1,duration:0.45,ease:'back.out(1.6)'},388.1);
+          tl.fromTo(".card[data-card-id=\"card-19\"] #card-19-form",{opacity:0,x:-50},{opacity:1,x:0,duration:0.45,ease:'power3.out'},392.3);
+          tl.fromTo(".card[data-card-id=\"card-19\"] #card-19-d20",{opacity:0,x:-50},{opacity:1,x:0,duration:0.45,ease:'power3.out'},399.6);
+          tl.fromTo(".card[data-card-id=\"card-19\"] #card-19-ai",{opacity:0,x:-50},{opacity:1,x:0,duration:0.45,ease:'power3.out'},403.2);
+          tl.fromTo(".card[data-card-id=\"card-19\"] #card-19-logo",{opacity:0,x:-50},{opacity:1,x:0,duration:0.45,ease:'power3.out'},406.1);
+          tl.to(".card[data-card-id=\"card-19\"]",{opacity:0,y:-24,duration:0.35,ease:'power2.in'},410.6667);
+          // card-20 [411.0, 433.9]
+          tl.fromTo(".card[data-card-id=\"card-20\"]",{opacity:0,y:36},{opacity:1,y:0,duration:0.45,ease:'power3.out'},411.0);
+          tl.fromTo(".card[data-card-id=\"card-20\"] #card-20-kicker",{opacity:0},{opacity:1,duration:0.4,ease:'power2.out'},411.2);
+          tl.fromTo(".card[data-card-id=\"card-20\"] #card-20-rail",{"scaleX": 0},{...{"scaleX": 1},duration:1.0,ease:'power2.out'},411.3);
+          tl.fromTo(".card[data-card-id=\"card-20\"] #card-20-e1",{opacity:0,scale:0.6},{opacity:1,scale:1,duration:0.45,ease:'back.out(1.6)'},411.6);
+          tl.fromTo(".card[data-card-id=\"card-20\"] #card-20-e2",{opacity:0,scale:0.6},{opacity:1,scale:1,duration:0.5,ease:'back.out(1.6)'},430.6);
+          tl.fromTo(".card[data-card-id=\"card-20\"] #card-20-e3",{opacity:0,scale:0.6},{opacity:1,scale:1,duration:0.45,ease:'back.out(1.6)'},412.0);
+          tl.fromTo(".card[data-card-id=\"card-20\"] #card-20-k1",{opacity:0,x:-50},{opacity:1,x:0,duration:0.45,ease:'power3.out'},413.9);
+          tl.fromTo(".card[data-card-id=\"card-20\"] #card-20-k2",{opacity:0,x:-50},{opacity:1,x:0,duration:0.45,ease:'power3.out'},416.6);
+          tl.fromTo(".card[data-card-id=\"card-20\"] #card-20-k3",{opacity:0,x:-50},{opacity:1,x:0,duration:0.45,ease:'power3.out'},425.8);
+          tl.to(".card[data-card-id=\"card-20\"]",{opacity:0,y:-24,duration:0.35,ease:'power2.in'},433.5333);
+          // card-21 [433.9, 444.2]
+          tl.fromTo(".card[data-card-id=\"card-21\"]",{opacity:0,y:36},{opacity:1,y:0,duration:0.45,ease:'power3.out'},433.9);
+          tl.fromTo(".card[data-card-id=\"card-21\"] #card-21-kicker",{opacity:0},{opacity:1,duration:0.4,ease:'power2.out'},434.0);
+          tl.fromTo(".card[data-card-id=\"card-21\"] #card-21-ask .char",{opacity:0},{opacity:1,duration:0.01,ease:'none',stagger:0.12},434.0);
+          tl.fromTo(".card[data-card-id=\"card-21\"] #card-21-pdf",{opacity:0,scale:0.6},{opacity:1,scale:1,duration:0.6,ease:'back.out(1.6)'},437.7);
+          tl.fromTo(".card[data-card-id=\"card-21\"] #card-21-dl",{opacity:0,y:-40},{opacity:1,y:0,duration:0.45,ease:'power3.out'},441.2);
+          tl.to(".card[data-card-id=\"card-21\"]",{opacity:0,y:-24,duration:0.35,ease:'power2.in'},443.8333);
+          // card-22 [444.2, 471.1]
+          tl.fromTo(".card[data-card-id=\"card-22\"]",{opacity:0,y:36},{opacity:1,y:0,duration:0.45,ease:'power3.out'},444.2);
+          tl.fromTo(".card[data-card-id=\"card-22\"] #card-22-kicker",{opacity:0},{opacity:1,duration:0.4,ease:'power2.out'},444.4);
+          tl.fromTo(".card[data-card-id=\"card-22\"] #card-22-title .char",{opacity:0,y:24,scale:0.85},{opacity:1,y:0,scale:1,duration:0.7,ease:'power3.out',stagger:0.025},448.2);
+          tl.fromTo(".card[data-card-id=\"card-22\"] #card-22-c1",{opacity:0},{opacity:1,duration:0.4,ease:'power2.out'},444.6);
+          tl.fromTo(".card[data-card-id=\"card-22\"] #card-22-unlink",{opacity:0,scale:0.6},{opacity:1,scale:1,duration:0.5,ease:'back.out(1.6)'},466.4);
+          tl.fromTo(".card[data-card-id=\"card-22\"] #card-22-c2",{opacity:0,scale:0.6},{opacity:1,scale:1,duration:0.5,ease:'back.out(1.6)'},449.0);
+          tl.fromTo(".card[data-card-id=\"card-22\"] #card-22-pdf2",{opacity:0,x:-120},{opacity:1,x:0,duration:0.5,ease:'power3.out'},451.0);
+          tl.fromTo(".card[data-card-id=\"card-22\"] #card-22-prompt .char",{opacity:0},{opacity:1,duration:0.01,ease:'none',stagger:0.0762},454.9);
+          tl.fromTo(".card[data-card-id=\"card-22\"] #card-22-noctx",{opacity:0},{opacity:1,duration:0.4,ease:'power2.out'},466.4);
+          tl.fromTo(".card[data-card-id=\"card-22\"] #card-22-send",{opacity:0,scale:0.6},{opacity:1,scale:1,duration:0.4,ease:'back.out(1.6)'},461.6);
+          tl.to(".card[data-card-id=\"card-22\"]",{opacity:0,y:-24,duration:0.35,ease:'power2.in'},470.7333);
+          // card-23 [471.1, 481.2]
+          tl.fromTo(".card[data-card-id=\"card-23\"]",{opacity:0,y:36},{opacity:1,y:0,duration:0.45,ease:'power3.out'},471.1);
+          tl.fromTo(".card[data-card-id=\"card-23\"] #card-23-kicker",{opacity:0},{opacity:1,duration:0.4,ease:'power2.out'},471.2);
+          tl.fromTo(".card[data-card-id=\"card-23\"] #card-23-b",{opacity:0,scale:0.6},{opacity:1,scale:1,duration:0.45,ease:'back.out(1.6)'},471.3);
+          tl.fromTo(".card[data-card-id=\"card-23\"] #card-23-read",{clipPath:'inset(0 100% 0 0)'},{clipPath:'inset(0% 0% 0% 0%)',duration:0.5,ease:'power2.inOut'},473.4);
+          tl.fromTo(".card[data-card-id=\"card-23\"] #card-23-art",{opacity:0,scale:0.6},{opacity:1,scale:1,duration:0.6,ease:'back.out(1.6)'},476.4);
+          tl.fromTo(".card[data-card-id=\"card-23\"] #card-23-via",{opacity:0,filter:'blur(14px)'},{opacity:1,filter:'blur(0px)',duration:0.5,ease:'power2.out'},478.8);
+          tl.to(".card[data-card-id=\"card-23\"]",{opacity:0,y:-24,duration:0.35,ease:'power2.in'},480.8333);
+          // card-24 [481.2, 486.4]
+          tl.fromTo(".card[data-card-id=\"card-24\"]",{opacity:0,y:36},{opacity:1,y:0,duration:0.45,ease:'power3.out'},481.2);
+          tl.fromTo(".card[data-card-id=\"card-24\"] #card-24-title .char",{opacity:0,y:24,scale:0.85},{opacity:1,y:0,scale:1,duration:0.6,ease:'power3.out',stagger:0.025},481.3);
+          tl.fromTo(".card[data-card-id=\"card-24\"] #card-24-s1",{opacity:0,x:-60},{opacity:1,x:0,duration:0.4,ease:'power3.out'},482.2);
+          tl.fromTo(".card[data-card-id=\"card-24\"] #card-24-s2",{opacity:0,x:-60},{opacity:1,x:0,duration:0.4,ease:'power3.out'},482.6);
+          tl.fromTo(".card[data-card-id=\"card-24\"] #card-24-s3",{opacity:0,x:-60},{opacity:1,x:0,duration:0.4,ease:'power3.out'},483.0);
+          tl.fromTo(".card[data-card-id=\"card-24\"] #card-24-s4",{opacity:0,x:-60},{opacity:1,x:0,duration:0.4,ease:'power3.out'},483.4);
+          // chapter rail
+          tl.fromTo('#sf-0',{scaleX:0},{scaleX:1,duration:22.4,ease:'none'},0.0);
+          tl.fromTo('#ct-0',{opacity:0,y:30},{opacity:1,y:0,duration:0.5,ease:'power3.out'},0.0);
+          tl.fromTo('#cn-0',{opacity:0,y:30},{opacity:1,y:0,duration:0.5,ease:'power3.out'},0.0);
+          tl.to('#ct-0',{opacity:0,y:-30,duration:0.35,ease:'power2.in'},22.0333);
+          tl.to('#cn-0',{opacity:0,y:-30,duration:0.35,ease:'power2.in'},22.0333);
+          tl.fromTo('#sf-1',{scaleX:0},{scaleX:1,duration:85.7,ease:'none'},22.4);
+          tl.fromTo('#ct-1',{opacity:0,y:30},{opacity:1,y:0,duration:0.5,ease:'power3.out'},22.4);
+          tl.fromTo('#cn-1',{opacity:0,y:30},{opacity:1,y:0,duration:0.5,ease:'power3.out'},22.4);
+          tl.to('#ct-1',{opacity:0,y:-30,duration:0.35,ease:'power2.in'},107.7333);
+          tl.to('#cn-1',{opacity:0,y:-30,duration:0.35,ease:'power2.in'},107.7333);
+          tl.fromTo('#sf-2',{scaleX:0},{scaleX:1,duration:99.6,ease:'none'},108.1);
+          tl.fromTo('#ct-2',{opacity:0,y:30},{opacity:1,y:0,duration:0.5,ease:'power3.out'},108.1);
+          tl.fromTo('#cn-2',{opacity:0,y:30},{opacity:1,y:0,duration:0.5,ease:'power3.out'},108.1);
+          tl.to('#ct-2',{opacity:0,y:-30,duration:0.35,ease:'power2.in'},207.3333);
+          tl.to('#cn-2',{opacity:0,y:-30,duration:0.35,ease:'power2.in'},207.3333);
+          tl.fromTo('#sf-3',{scaleX:0},{scaleX:1,duration:43.3,ease:'none'},207.7);
+          tl.fromTo('#ct-3',{opacity:0,y:30},{opacity:1,y:0,duration:0.5,ease:'power3.out'},207.7);
+          tl.fromTo('#cn-3',{opacity:0,y:30},{opacity:1,y:0,duration:0.5,ease:'power3.out'},207.7);
+          tl.to('#ct-3',{opacity:0,y:-30,duration:0.35,ease:'power2.in'},250.6667);
+          tl.to('#cn-3',{opacity:0,y:-30,duration:0.35,ease:'power2.in'},250.6667);
+          tl.fromTo('#sf-4',{scaleX:0},{scaleX:1,duration:182.9,ease:'none'},251.0);
+          tl.fromTo('#ct-4',{opacity:0,y:30},{opacity:1,y:0,duration:0.5,ease:'power3.out'},251.0);
+          tl.fromTo('#cn-4',{opacity:0,y:30},{opacity:1,y:0,duration:0.5,ease:'power3.out'},251.0);
+          tl.to('#ct-4',{opacity:0,y:-30,duration:0.35,ease:'power2.in'},433.5333);
+          tl.to('#cn-4',{opacity:0,y:-30,duration:0.35,ease:'power2.in'},433.5333);
+          tl.fromTo('#sf-5',{scaleX:0},{scaleX:1,duration:52.5,ease:'none'},433.9);
+          tl.fromTo('#ct-5',{opacity:0,y:30},{opacity:1,y:0,duration:0.5,ease:'power3.out'},433.9);
+          tl.fromTo('#cn-5',{opacity:0,y:30},{opacity:1,y:0,duration:0.5,ease:'power3.out'},433.9);
+          window.__timelines["talking-head-recut"] = tl;
+        })();
+      </script>
+    </div>
+  </body>
+</html>

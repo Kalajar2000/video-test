@@ -1,0 +1,6 @@
+# Render scratch and intermediates (regenerable)
+work-*/
+frames/
+snaps/
+audio.mp3
+*.log

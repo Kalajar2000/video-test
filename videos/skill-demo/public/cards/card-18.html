@@ -1,0 +1,32 @@
+<div class="card" data-card-id="card-18">
+<style>
+.card[data-card-id="card-18"] .grid { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+.card[data-card-id="card-18"] .tile { padding:26px 30px; border-radius:24px; background:var(--panel); border:2px solid var(--line); }
+.card[data-card-id="card-18"] .tile.wide { grid-column:span 2; }
+.card[data-card-id="card-18"] .tv { font:700 92px/1 'Inter'; letter-spacing:-0.03em; color:var(--acc); font-variant-numeric:tabular-nums; }
+.card[data-card-id="card-18"] .tl { font:400 28px/1.2 'Inter'; color:var(--muted); margin-top:12px; }
+.card[data-card-id="card-18"] .places { display:flex; align-items:center; gap:30px; font:700 64px/1 'Inter'; }
+.card[data-card-id="card-18"] .old { position:relative; color:var(--muted); }
+.card[data-card-id="card-18"] .strike { position:absolute; left:-6px; right:-6px; top:50%; height:6px; margin-top:-3px; background:var(--accent-1); border-radius:3px; transform-origin:left center; }
+.card[data-card-id="card-18"] .new { color:var(--acc); }
+.card[data-card-id="card-18"] .insight { display:flex; align-items:center; gap:22px; padding:26px 30px; border-radius:24px; background:var(--acc); color:#141312; font:700 34px/1.25 'Inter'; }
+
+.card[data-card-id="card-18"] { --acc: var(--accent-1); }
+</style>
+<div class="root">
+<div class="kicker" id="card-18-kicker" data-anim="fade-in" data-anim-at="0.2" data-anim-duration="0.4">Brief · el evento</div>
+<div class="grid">
+  <div class="tile" id="card-18-t1" data-anim="scale-pop" data-anim-at="0.3" data-anim-duration="0.45"><div class="tv"><span class="num" id="card-18-n100" data-anim="count-up" data-anim-at="3.5" data-anim-duration="1.2" data-anim-from="0" data-anim-to="100" data-anim-format=",d">0</span></div><div class="tl">estudiantes, mínimo</div></div>
+  <div class="tile" id="card-18-t2" data-anim="scale-pop" data-anim-at="6.9" data-anim-duration="0.45"><div class="tv"><span id="card-18-date" data-anim="blur-in" data-anim-at="8.4" data-anim-duration="0.5">1 dic</span></div><div class="tl">fecha</div></div>
+  <div class="tile wide" id="card-18-t3" data-anim="scale-pop" data-anim-at="13.5" data-anim-duration="0.45">
+    <div class="places">
+      <span class="old" id="card-18-old" data-anim="slide-in" data-anim-at="16.1" data-anim-duration="0.4" data-anim-from="left" data-anim-distance="40"><span id="card-18-olddim" data-anim="morph-to" data-anim-at="19.5" data-anim-duration="0.4" data-anim-from="{&quot;opacity&quot;: 1}" data-anim-props="{&quot;opacity&quot;: 0.4}">Edificio 5</span><span class="strike" id="card-18-strike" data-anim="morph-to" data-anim-at="19.3" data-anim-duration="0.4" data-anim-from="{&quot;scaleX&quot;: 0}" data-anim-props="{&quot;scaleX&quot;: 1}"></span></span>
+      <span class="new" id="card-18-new" data-anim="slide-in" data-anim-at="22.1" data-anim-duration="0.45" data-anim-from="right" data-anim-distance="50">Paraninfo</span>
+    </div>
+    <div class="tl">lugar</div>
+  </div>
+  <div class="tile wide" id="card-18-t4" data-anim="scale-pop" data-anim-at="25.3" data-anim-duration="0.45"><div class="tv"><span id="card-18-hour" data-anim="blur-in" data-anim-at="26.8" data-anim-duration="0.5">10:00 a.m.</span></div><div class="tl">hora</div></div>
+</div>
+<div class="insight" id="card-18-ins" data-anim="slide-in" data-anim-at="31.0" data-anim-duration="0.5" data-anim-from="bottom" data-anim-distance="40"><span class="ico" style="width:56px;height:56px;"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"><path d="M10 26v12h10l22 12V14L20 26z"/><path d="M50 24c4 4 4 12 0 16"/></svg></span><span>No saben que existe: hay que promocionarlo bastante</span></div>
+</div>
+</div>

@@ -1,0 +1,33 @@
+<div class="card" data-card-id="card-01">
+<style>
+.card[data-card-id="card-01"] .eq { display:flex; align-items:center; gap:24px; margin-top:8px; }
+.card[data-card-id="card-01"] .eq-sign { font:700 64px/1 'Inter'; color:var(--muted); }
+.card[data-card-id="card-01"] .eq-txt { font:700 56px/1 'Inter'; }
+.card[data-card-id="card-01"] .stack { position:relative; height:470px; margin-top:24px; }
+.card[data-card-id="card-01"] .pcard { position:absolute; left:120px; width:620px; height:330px; border-radius:28px; background:var(--panel); border:2px solid var(--line); padding:40px 44px; display:flex; flex-direction:column; gap:22px; }
+.card[data-card-id="card-01"] .p3 { top:0; left:200px; opacity:.45; }
+.card[data-card-id="card-01"] .p2 { top:40px; left:160px; opacity:.7; }
+.card[data-card-id="card-01"] .p1 { top:80px; border-color:var(--acc); }
+.card[data-card-id="card-01"] .ptag { font-size:26px; color:var(--acc); letter-spacing:.1em; text-transform:uppercase; }
+.card[data-card-id="card-01"] .bar { height:22px; border-radius:11px; background:var(--panel-2); }
+.card[data-card-id="card-01"] .badge { position:absolute; right:40px; top:300px; }
+
+.card[data-card-id="card-01"] { --acc: var(--accent-0); }
+</style>
+<div class="root">
+<div class="kicker" id="card-01-kicker" data-anim="fade-in" data-anim-at="0.2" data-anim-duration="0.4">Claude · skills</div>
+<h1 class="title" id="card-01-title" data-anim="kinetic-chars" data-anim-at="0.4" data-anim-duration="0.7" data-anim-stagger="0.025" data-anim-pattern="pop"><span class="w"><span class="char">¿</span><span class="char">Q</span><span class="char">u</span><span class="char">é</span></span> <span class="w"><span class="char">e</span><span class="char">s</span></span> <span class="w"><span class="char">u</span><span class="char">n</span><span class="char">a</span></span> <span class="w"><span class="char">s</span><span class="char">k</span><span class="char">i</span><span class="char">l</span><span class="char">l</span><span class="char">?</span></span></h1>
+<div class="eq" id="card-01-eq" data-anim="blur-in" data-anim-at="5.8" data-anim-duration="0.6">
+  <span class="chip big">skill</span><span class="eq-sign">=</span><span class="eq-txt">prompt <span class="acc">repetible</span></span>
+</div>
+<div class="stack">
+  <div class="pcard p3" id="card-01-p3" data-anim="slide-in" data-anim-at="7.9" data-anim-duration="0.5" data-anim-from="bottom" data-anim-distance="60"></div>
+  <div class="pcard p2" id="card-01-p2" data-anim="slide-in" data-anim-at="7.5" data-anim-duration="0.5" data-anim-from="bottom" data-anim-distance="60"></div>
+  <div class="pcard p1" id="card-01-p1" data-anim="scale-pop" data-anim-at="6.7" data-anim-duration="0.5">
+    <div class="ptag mono">prompt</div>
+    <div class="bar" style="width:86%"></div><div class="bar" style="width:72%"></div><div class="bar" style="width:80%"></div><div class="bar" style="width:54%"></div>
+  </div>
+  <div class="badge" id="card-01-badge" data-anim="scale-pop" data-anim-at="7.6" data-anim-duration="0.5"><span class="ico" style="width:44px;height:44px;"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 30a18 18 0 0 1 32-11l4 5"/><path d="M50 12v12H38"/><path d="M50 34a18 18 0 0 1-32 11l-4-5"/><path d="M14 52V40h12"/></svg></span><span>repetible</span></div>
+</div>
+</div>
+</div>

@@ -1,0 +1,35 @@
+<div class="card" data-card-id="card-20">
+<style>
+.card[data-card-id="card-20"] .tline { position:relative; height:290px; margin-top:10px; }
+.card[data-card-id="card-20"] .rail { position:absolute; left:20px; right:20px; top:40px; height:8px; border-radius:4px; background:var(--panel-2); }
+.card[data-card-id="card-20"] .railfill { width:100%; height:100%; border-radius:4px; background:var(--acc); transform-origin:left center; }
+.card[data-card-id="card-20"] .ev { position:absolute; top:22px; width:300px; }
+.card[data-card-id="card-20"] .e1 { left:0; }
+.card[data-card-id="card-20"] .e2 { left:342px; }
+.card[data-card-id="card-20"] .e3 { left:684px; }
+.card[data-card-id="card-20"] .dot { display:block; width:44px; height:44px; border-radius:50%; background:var(--bg); border:6px solid var(--acc); }
+.card[data-card-id="card-20"] .dot.hot { background:var(--acc); }
+.card[data-card-id="card-20"] .ed { font:700 64px/1 'Inter'; letter-spacing:-0.02em; margin-top:26px; }
+.card[data-card-id="card-20"] .el { font:400 28px/1.25 'Inter'; color:var(--muted); margin-top:12px; }
+.card[data-card-id="card-20"] .kv { display:flex; flex-direction:column; gap:14px; }
+.card[data-card-id="card-20"] .k { display:flex; align-items:center; justify-content:space-between; gap:20px; padding:24px 28px; border-radius:18px; background:var(--panel); border:2px solid var(--line); }
+.card[data-card-id="card-20"] .kk { font-size:22px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); }
+.card[data-card-id="card-20"] .vv { font:700 38px/1.1 'Inter'; color:var(--acc); }
+
+.card[data-card-id="card-20"] { --acc: var(--accent-3); }
+</style>
+<div class="root">
+<div class="kicker" id="card-20-kicker" data-anim="fade-in" data-anim-at="0.2" data-anim-duration="0.4">Brief · calendario</div>
+<div class="tline">
+  <div class="rail"><div class="railfill" id="card-20-rail" data-anim="morph-to" data-anim-at="0.3" data-anim-duration="1.0" data-anim-from="{&quot;scaleX&quot;: 0}" data-anim-props="{&quot;scaleX&quot;: 1}"></div></div>
+  <div class="ev e1" id="card-20-e1" data-anim="scale-pop" data-anim-at="0.6" data-anim-duration="0.45"><span class="dot"></span><div class="ed">20 nov</div><div class="el">Entrega para aprobación</div></div>
+  <div class="ev e2" id="card-20-e2" data-anim="scale-pop" data-anim-at="19.6" data-anim-duration="0.5"><span class="dot hot"></span><div class="ed">27 nov</div><div class="el">Cierran inscripciones</div></div>
+  <div class="ev e3" id="card-20-e3" data-anim="scale-pop" data-anim-at="1.0" data-anim-duration="0.45"><span class="dot"></span><div class="ed">1 dic</div><div class="el">Evento, 10:00 a.m.</div></div>
+</div>
+<div class="kv">
+  <div class="k" id="card-20-k1" data-anim="slide-in" data-anim-at="2.9" data-anim-duration="0.45" data-anim-from="left" data-anim-distance="50"><span class="kk mono">Aprueba</span><span class="vv">Rectoría</span></div>
+  <div class="k" id="card-20-k2" data-anim="slide-in" data-anim-at="5.6" data-anim-duration="0.45" data-anim-from="left" data-anim-distance="50"><span class="kk mono">Enlace del formulario</span><span class="vv">Va en el copy</span></div>
+  <div class="k" id="card-20-k3" data-anim="slide-in" data-anim-at="14.8" data-anim-duration="0.45" data-anim-from="left" data-anim-distance="50"><span class="kk mono">Actividades</span><span class="vv">Sorpresa</span></div>
+</div>
+</div>
+</div>

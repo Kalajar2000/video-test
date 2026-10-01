@@ -1,0 +1,303 @@
+{
+  "schemaVersion": 3,
+  "composition": {
+    "fps": 30,
+    "width": 1080,
+    "height": 1920,
+    "durationSeconds": 486.4,
+    "layout": "portrait",
+    "themeId": "custom-warm-dark",
+    "seed": 42
+  },
+  "videoTrack": {
+    "sourcePath": "input-video.mp4",
+    "startSec": 0,
+    "endSec": 486.4,
+    "bounds": {
+      "x": 0,
+      "y": 0,
+      "width": 1080,
+      "height": 702
+    }
+  },
+  "subtitles": {
+    "enabled": false
+  },
+  "cards": [
+    {
+      "id": "card-01",
+      "intent": "Define a skill: a repeatable prompt",
+      "startSec": 0.4,
+      "endSec": 11.4,
+      "accentIndex": 0,
+      "zone": "lower-third",
+      "contentHints": {
+        "kicker": "Claude · skills",
+        "title": "¿Qué es una skill?",
+        "detail": "skill = prompt repetible"
+      }
+    },
+    {
+      "id": "card-02",
+      "intent": "Same skill runs in Claude and ChatGPT and behaves the same every time",
+      "startSec": 11.4,
+      "endSec": 22.4,
+      "accentIndex": 1,
+      "zone": "lower-third",
+      "contentHints": {
+        "title": "Siempre de la misma manera",
+        "detail": "También funciona en ChatGPT"
+      }
+    },
+    {
+      "id": "card-03",
+      "intent": "The source material: a folder of documents for writing an ad brief, and who uses a brief",
+      "startSec": 22.4,
+      "endSec": 42.1,
+      "accentIndex": 2,
+      "zone": "lower-third",
+      "contentHints": {
+        "title": "Un folder para hacer un brief publicitario",
+        "detail": "editores de video, estrategas creativos, marketing"
+      }
+    },
+    {
+      "id": "card-04",
+      "intent": "Folder contents: what a brief is, questions, structure, video brief, writing rules",
+      "startSec": 42.1,
+      "endSec": 59.3,
+      "accentIndex": 2,
+      "zone": "lower-third",
+      "contentHints": {
+        "title": "Qué hay dentro (1/2)"
+      }
+    },
+    {
+      "id": "card-05",
+      "intent": "Folder contents: researched with Claude, checklist, examples, organic reels explained",
+      "startSec": 59.3,
+      "endSec": 88.5,
+      "accentIndex": 3,
+      "zone": "lower-third",
+      "contentHints": {
+        "title": "Qué hay dentro (2/2)"
+      }
+    },
+    {
+      "id": "card-06",
+      "intent": "University context: the skill follows the university's AI-use regulation",
+      "startSec": 88.5,
+      "endSec": 108.1,
+      "accentIndex": 4,
+      "zone": "lower-third",
+      "contentHints": {
+        "title": "Adaptada a la universidad",
+        "detail": "Reglamento de uso de IA, Universidad de Boyacá"
+      }
+    },
+    {
+      "id": "card-07",
+      "intent": "Upload the folder to the chat and call /skill-creator",
+      "startSec": 108.1,
+      "endSec": 119.0,
+      "accentIndex": 0,
+      "zone": "lower-third",
+      "contentHints": {
+        "title": "Sube el folder",
+        "detail": "/skill-creator"
+      }
+    },
+    {
+      "id": "card-08",
+      "intent": "skill-creator is built into Claude by default and its job is to create skills",
+      "startSec": 119.0,
+      "endSec": 131.5,
+      "accentIndex": 1,
+      "zone": "lower-third",
+      "contentHints": {
+        "title": "Una skill que crea skills",
+        "detail": "viene por defecto"
+      }
+    },
+    {
+      "id": "card-09",
+      "intent": "The exact prompt typed: /skill-creator with the uploaded folder",
+      "startSec": 131.5,
+      "endSec": 145.7,
+      "accentIndex": 0,
+      "zone": "lower-third",
+      "contentHints": {
+        "detail": "/skill-creator con el folder que acabo de subir"
+      }
+    },
+    {
+      "id": "card-10",
+      "intent": "Claude builds the skill: material + skill-creator produce prompt structure, skill parts, best prompt; acts like an agent",
+      "startSec": 145.7,
+      "endSec": 176.1,
+      "accentIndex": 2,
+      "zone": "lower-third",
+      "contentHints": {
+        "title": "Claude arma la skill"
+      }
+    },
+    {
+      "id": "card-11",
+      "intent": "Two ways to trigger a skill: you call it with a slash, or Claude uses it on its own",
+      "startSec": 176.1,
+      "endSec": 207.7,
+      "accentIndex": 3,
+      "zone": "lower-third",
+      "contentHints": {
+        "title": "Dos formas de usar una skill"
+      }
+    },
+    {
+      "id": "card-12",
+      "intent": "Skill saved; first way to save it is clicking the button",
+      "startSec": 207.7,
+      "endSec": 221.9,
+      "accentIndex": 2,
+      "zone": "lower-third",
+      "contentHints": {
+        "title": "Skill guardada",
+        "detail": "Dos maneras de guardarla"
+      }
+    },
+    {
+      "id": "card-13",
+      "intent": "Second way: upload skills from other people via Customize > Add > Skill",
+      "startSec": 221.9,
+      "endSec": 234.4,
+      "accentIndex": 3,
+      "zone": "lower-third",
+      "contentHints": {
+        "title": "Sube skills de otras personas",
+        "detail": "Customize > Agregar > Skill"
+      }
+    },
+    {
+      "id": "card-14",
+      "intent": "Skills shared on social media come as zip, skill file or MD file; you upload them and they work",
+      "startSec": 234.4,
+      "endSec": 251.0,
+      "accentIndex": 1,
+      "zone": "lower-third",
+      "contentHints": {
+        "title": "Ya vienen listas",
+        "detail": ".zip / skill file / .md"
+      }
+    },
+    {
+      "id": "card-15",
+      "intent": "Back in the chat, launch the new skill",
+      "startSec": 251.0,
+      "endSec": 274.3,
+      "accentIndex": 0,
+      "zone": "lower-third",
+      "contentHints": {
+        "title": "Ahora toca usarla"
+      }
+    },
+    {
+      "id": "card-16",
+      "intent": "The key question for the ad piece, revealed word by word as it is spoken",
+      "startSec": 274.3,
+      "endSec": 292.4,
+      "accentIndex": 4,
+      "zone": "lower-third",
+      "contentHints": {
+        "title": "Lo que tenemos que pensar en esta pieza publicitaria es que..."
+      }
+    },
+    {
+      "id": "card-17",
+      "intent": "The brief fills in: objective, channel, expected reaction, mandatory logo, approval, what cannot appear",
+      "startSec": 292.4,
+      "endSec": 339.1,
+      "accentIndex": 0,
+      "zone": "lower-third",
+      "contentHints": {
+        "title": "Brief: lo esencial"
+      }
+    },
+    {
+      "id": "card-18",
+      "intent": "Event facts: 100 students, 1 December, Building 5 corrected to the Paraninfo, 10 a.m., nobody knows the event exists",
+      "startSec": 339.1,
+      "endSec": 381.5,
+      "accentIndex": 1,
+      "zone": "lower-third",
+      "contentHints": {
+        "title": "El evento"
+      }
+    },
+    {
+      "id": "card-19",
+      "intent": "The piece: static image for Instagram and university email, sign-up form, made with AI images, logo from the website",
+      "startSec": 381.5,
+      "endSec": 411.0,
+      "accentIndex": 2,
+      "zone": "lower-third",
+      "contentHints": {
+        "title": "La pieza"
+      }
+    },
+    {
+      "id": "card-20",
+      "intent": "Calendar (20 Nov delivery, 27 Nov sign-ups close, 1 Dec event) plus approver, form link, activities",
+      "startSec": 411.0,
+      "endSec": 433.9,
+      "accentIndex": 3,
+      "zone": "lower-third",
+      "contentHints": {
+        "title": "Calendario"
+      }
+    },
+    {
+      "id": "card-21",
+      "intent": "Ask for the brief as a PDF, it arrives, download it",
+      "startSec": 433.9,
+      "endSec": 444.2,
+      "accentIndex": 0,
+      "zone": "lower-third",
+      "contentHints": {
+        "title": "Brief en PDF"
+      }
+    },
+    {
+      "id": "card-22",
+      "intent": "Test in a new chat with no prior context: drop the PDF and ask for the graphic via the Higgsfield connector",
+      "startSec": 444.2,
+      "endSec": 471.1,
+      "accentIndex": 4,
+      "zone": "lower-third",
+      "contentHints": {
+        "title": "En otro chat",
+        "detail": "Por favor realiza esta pieza gráfica utilizando el conector de Higgsfield"
+      }
+    },
+    {
+      "id": "card-23",
+      "intent": "After reading the brief, Claude made the graphic with the Higgsfield connector",
+      "startSec": 471.1,
+      "endSec": 481.2,
+      "accentIndex": 2,
+      "zone": "lower-third",
+      "contentHints": {
+        "title": "Del brief a la pieza"
+      }
+    },
+    {
+      "id": "card-24",
+      "intent": "Recap: that is how a skill is made",
+      "startSec": 481.2,
+      "endSec": 486.4,
+      "accentIndex": 0,
+      "zone": "lower-third",
+      "contentHints": {
+        "title": "Así se crea una skill"
+      }
+    }
+  ]
+}

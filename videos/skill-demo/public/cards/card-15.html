@@ -1,0 +1,27 @@
+<div class="card" data-card-id="card-15">
+<style>
+.card[data-card-id="card-15"] .chatline { display:flex; align-items:center; gap:18px; font:400 34px/1.2 'Inter'; color:var(--muted); }
+.card[data-card-id="card-15"] .pop { display:flex; flex-direction:column; gap:10px; padding:18px; border-radius:22px; background:var(--panel); border:2px solid var(--line); }
+.card[data-card-id="card-15"] .it { display:flex; align-items:center; gap:16px; padding:20px 22px; border-radius:14px; font:700 34px/1 'Inter'; }
+.card[data-card-id="card-15"] .it.hl { background:var(--panel-2); border:2px solid var(--acc); color:var(--acc); }
+.card[data-card-id="card-15"] .it.hl span:last-child { color:var(--text); }
+.card[data-card-id="card-15"] .sk { display:block; width:60%; height:20px; border-radius:10px; background:var(--panel-2); }
+.card[data-card-id="card-15"] .input { font-size:48px; padding:24px 32px; min-height:0; }
+.card[data-card-id="card-15"] .caret { display:inline-block; width:4px; height:52px; background:var(--text); margin-left:6px; vertical-align:middle; }
+.card[data-card-id="card-15"] .launch { align-self:flex-start; }
+
+.card[data-card-id="card-15"] { --acc: var(--accent-0); }
+</style>
+<div class="root">
+<div class="kicker" id="card-15-kicker" data-anim="fade-in" data-anim-at="0.2" data-anim-duration="0.4">Usar la skill</div>
+<h1 class="title" id="card-15-title" data-anim="kinetic-chars" data-anim-at="0.3" data-anim-duration="0.6" data-anim-stagger="0.025" data-anim-pattern="pop"><span class="w"><span class="char">A</span><span class="char">h</span><span class="char">o</span><span class="char">r</span><span class="char">a</span></span> <span class="w"><span class="char">t</span><span class="char">o</span><span class="char">c</span><span class="char">a</span></span> <span class="w"><span class="char">u</span><span class="char">s</span><span class="char">a</span><span class="char">r</span><span class="char">l</span><span class="char">a</span></span></h1>
+<div class="chatline" id="card-15-back" data-anim="fade-in" data-anim-at="2.0" data-anim-duration="0.4"><span class="ico" style="width:44px;height:44px;color:var(--muted)"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"><path d="M8 12h48v32H28l-12 10V44H8z"/></svg></span><span>De vuelta al último chat</span></div>
+<div class="pop" id="card-15-pop" data-anim="slide-in" data-anim-at="11.2" data-anim-duration="0.5" data-anim-from="bottom" data-anim-distance="50">
+  <div class="it"><span class="sk"></span></div>
+  <div class="it hl" id="card-15-hl" data-anim="morph-to" data-anim-at="14.6" data-anim-duration="0.4" data-anim-from="{&quot;opacity&quot;: 0.35}" data-anim-props="{&quot;opacity&quot;: 1}"><span class="ico" style="width:34px;height:34px;"><svg viewBox="0 0 64 64" fill="currentColor"><path d="M32 4l6 20 20 8-20 8-6 20-6-20-20-8 20-8z"/></svg></span><span>Tu skill nueva</span></div>
+  <div class="it"><span class="sk" style="width:46%"></span></div>
+</div>
+<div class="input mono"><span class="acc">/</span><span class="caret"></span></div>
+<span class="chip solid launch" id="card-15-launch" data-anim="scale-pop" data-anim-at="17.6" data-anim-duration="0.5">Lanzar la skill</span>
+</div>
+</div>
